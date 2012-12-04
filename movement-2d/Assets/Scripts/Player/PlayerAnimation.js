@@ -11,7 +11,7 @@ function Start() {
 // Update is called once per frame
 function Update() {
 	// run right
-	if (player.directionX == Player.TO_THE_RIGHT) {
+	if (player.IsMovingRight()) {
 		if (player.isMoving) {
 			if (currentAnimation != animations.WalkRight) {
 				currentAnimation = animations.WalkRight;
@@ -26,7 +26,7 @@ function Update() {
 	}
 	
 	// run left
-	if (player.directionX == Player.TO_THE_LEFT) {
+	if (player.IsMovingLeft()) {
 		if (player.isMoving) {
 			if (currentAnimation != animations.WalkLeft) {
 				currentAnimation = animations.WalkLeft;
