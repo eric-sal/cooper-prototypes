@@ -3,7 +3,7 @@
 // These variables are for adjusting in the inspector how the object behaves
 var maxSpeed : float = 20.0;
 var force : float = 60.0;
-var jumpSpeed : float = 10.0;
+var jumpSpeed : float = 10.5;
  
 // These variables are there for use by the script and don't need to be edited
 private var state = 0;
