@@ -1,71 +1,41 @@
 // Physics Script from: http://wiki.unity3d.com/index.php?title=PhysicsFPSWalker
-
 // These variables are for adjusting in the inspector how the object behaves
 var maxSpeed : float = 20.0;
 var force : float = 60.0;
 var jumpSpeed : float = 10.5;
  
 // These variables are there for use by the script and don't need to be edited
-private var state = 0;
+private var state = 1;
 private var grounded = false;
 private var jumpLimit = 0;
 
 
 private var player : Player;
 
-// Don't let the Physics Engine rotate this physics object so it doesn't fall over when running
-function Awake() {
-	rigidbody.freezeRotation = true;
-}
-
 // Use this for initialization
 function Start() {
 	player = GetComponent(Player);
-	// The line above is equivalent to: player = GameObject.Find('player').GetComponent(Player);
-	// However, since this script (PlayerController) is added as a component to the 'player' Prefab instance
-	// in the unity editor, the GameObject.Find('player') bit is unnecessary. We're already in the GameObject.
+	// The line above is equivalent to: player = GameObject.Find('Player').GetComponent(Player);
+	// However, since this script (PlayerController) is added as a component to the 'Player' Prefab instance
+	// in the unity editor, the GameObject.Find('Player') bit is unnecessary. We're already in the GameObject.
 }
 
 // This part detects whether or not the object is grounded and stores it in a variable
-function OnCollisionEnter(other : Collision) {
+function OnCollisionEnter() {
 	if (player.usePhysics) {
-		state ++;
+		state++;
 		if(state > 0) {
 			grounded = true;
 		}
-	} else {
-		player.MakeGrounded();
 	}
 }
 
 function OnCollisionExit() {
 	if (player.usePhysics) {
-		state --;
+		state--;
 		if(state < 1) {
 			grounded = false;
 			state = 0;
-		}
-	}
-}
-
-// it looks like if we're rolling our own physics, it needs to happen in the Update() function?
-function Update() {
-	if (!player.usePhysics) {
-		player.isMoving = false;
-
-		// keyboard input
-		if (Input.GetKey(KeyCode.LeftArrow)) {
-			player.MoveLeft();
-		}
-	
-		if (Input.GetKey(KeyCode.RightArrow)) {
-			player.MoveRight();
-		}
-	
-		if (Input.GetKey(KeyCode.Space)) {
-			if (player.IsGrounded()) {
-				player.Jump();
-			}
 		}
 	}
 }
@@ -95,6 +65,23 @@ function FixedUpdate() {
 		{
 			rigidbody.velocity.y += jumpSpeed;
 			jumpLimit = 0;
+		}
+	} else {
+		player.isMoving = false;
+
+		// keyboard input
+		if (Input.GetKey(KeyCode.LeftArrow)) {
+			player.MoveLeft();
+		}
+	
+		if (Input.GetKey(KeyCode.RightArrow)) {
+			player.MoveRight();
+		}
+	
+		if (Input.GetKey(KeyCode.Space)) {
+			if (player.isGrounded) {
+				player.Jump();
+			}
 		}
 	}
 }
