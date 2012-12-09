@@ -1,41 +1,39 @@
-private var player : Player;
-private var currentAnimation : animations;
+public enum Animations { StandRight, WalkRight, StandLeft, WalkLeft };
 
-public enum animations { StandRight, WalkRight, StandLeft, WalkLeft };
+private var _player : Player;
+private var _currentAnimation : Animations;
 
 // Use this for initialization
 function Start() {
-	player = GetComponent(Player);
+	_player = this.GetComponent(Player);
 }
 
 // Update is called once per frame
 function Update() {
-	// run right
-	if (player.IsMovingRight()) {
-		if (player.isMoving) {
-			if (currentAnimation != animations.WalkRight) {
-				currentAnimation = animations.WalkRight;
-				player.Sprite().Play("runRight");
+	if (_player.IsFacingRight()) {
+		if (_player.GetIsWalking()) {
+			if (_currentAnimation != Animations.WalkRight) {
+				_currentAnimation = Animations.WalkRight;
+				_player.GetSprite().Play("runRight");
 			}
 		} else {
-			if (currentAnimation != animations.StandRight) {
-				currentAnimation = animations.StandRight;
-				player.Sprite().ShowFrame(3);
+			if (_currentAnimation != Animations.StandRight) {
+				_currentAnimation = Animations.StandRight;
+				_player.GetSprite().ShowFrame(3);
 			}
 		}
 	}
-	
-	// run left
-	if (player.IsMovingLeft()) {
-		if (player.isMoving) {
-			if (currentAnimation != animations.WalkLeft) {
-				currentAnimation = animations.WalkLeft;
-				player.Sprite().Play("runLeft");
+	else {
+		// player is facing left
+		if (_player.GetIsWalking()) {
+			if (_currentAnimation != Animations.WalkLeft) {
+				_currentAnimation = Animations.WalkLeft;
+				_player.GetSprite().Play("runLeft");
 			}
 		} else {
-			if (currentAnimation != animations.StandLeft) {
-				currentAnimation = animations.StandLeft;
-				player.Sprite().ShowFrame(0);
+			if (_currentAnimation != Animations.StandLeft) {
+				_currentAnimation = Animations.StandLeft;
+				_player.GetSprite().ShowFrame(0);
 			}
 		}
 	}

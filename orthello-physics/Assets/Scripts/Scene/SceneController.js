@@ -1,6 +1,4 @@
-public static var GRAVITY : float = 20.0;
-
-var player : Player;
+public static var GRAVITY : float = -32;
 
 // Use this for initialization
 function Start() {
@@ -24,12 +22,4 @@ function FixedUpdate() {
 // It would grab all instances of applicable objects (player, enemies, moveable objects, etc.),
 // loop through the array of objects, and call the related instance methods.
 function ApplyGravity() {
-	if (!player.usePhysics) {
-		player.ApplyGravity();
-	}
-}
-
-public static function CalculateJumpVerticalSpeed(targetJumpHeight : float) : float {
-	// From the jump height and gravity we deduce the upwards speed for the character to reach at the apex.
-	return Mathf.Sqrt(2 * targetJumpHeight * GRAVITY);
 }
