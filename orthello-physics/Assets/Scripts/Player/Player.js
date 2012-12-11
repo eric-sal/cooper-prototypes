@@ -86,4 +86,17 @@ function OnJump() {
 
 function OnLand() {
 	_isJumping = false;
-};
+}
+
+function Respawn() {
+	_sprite.position.y = 10;
+	_sprite.position.x = 0;
+}
+
+/*
+Calculate new player velocities based on gravity.
+Called at a fixed interval independent of framerate.
+*/
+function ApplyGravity() {
+	AddVelocity(Vector2(0.0, SceneController.GRAVITY * Time.deltaTime));
+}

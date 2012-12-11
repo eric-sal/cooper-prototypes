@@ -15,30 +15,27 @@ function Start() {
 Detect user input and update player position.
 Called once per frame.
 */
-function Update() {
+function FixedUpdate() {
 
 	// Get the user input
 	var hitJump : boolean = Input.GetButtonDown("Jump");
 	var horizontal : float = Input.GetAxis("Horizontal"); // -1.0 to 1.0
-	
+
+	// horizontal direction has changed, undo last velocity applied
+	_player.AddVelocity(Vector2(_lastVelocity.x * -1, 0));
+
+	// apply velocity in new direction
+	_player.AddVelocity(Vector2(Player.WALK_SPEED * horizontal, 0));
+
 	//TODO: Use OnWalk and OnStop instead
-	_player.SetIsWalking(horizontal != 0.0);
-	
-	if (_lastHorizontal != horizontal) {
-		// horizontal direction has changed, undo last velocity applied
-		_player.AddVelocity(Vector2(_lastVelocity.x * -1, 0));
-		
-		// apply velocity in new direction
-		_player.AddVelocity(Vector2(Player.WALK_SPEED * horizontal, 0));
-		
-		if (horizontal > 0) {
-			_player.FaceRight();
-		}
-		else if (horizontal < 0) {
-			_player.FaceLeft();
-		}
-		
-		_lastHorizontal = horizontal;
+	var absHorizontalVelocity = Mathf.Abs(_player.GetVelocity().x);
+	_player.SetIsWalking(!_player.IsJumping() && absHorizontalVelocity > 0.1 && absHorizontalVelocity >= Mathf.Abs(_lastVelocity.x));
+
+	if (horizontal > 0) {
+		_player.FaceRight();
+	}
+	else if (horizontal < 0) {
+		_player.FaceLeft();
 	}
 	
 	if (hitJump) {
@@ -63,18 +60,9 @@ function Update() {
 	}
 	
 	// move the player
-	
-	// Why doesn't the following line work?  Hmm...
-	//_player.transform.Translate(v.x * dt, v.y * dt, 0.0);
 	var sprite : OTAnimatingSprite = _player.GetSprite();
 	sprite.position.x += v.x * dt;
 	sprite.position.y += v.y * dt;
-	
-	if (sprite.position.y < -24) {
-		// this magic number means the player fell off the edge
-		sprite.position.y = 10;
-		sprite.position.x = 0;
-	}
 	
 	_lastVelocity = v;
 }
@@ -148,13 +136,4 @@ function CollisionCheck(deltaTime : float) : Vector2 {
 	}
 	
 	return playerVelocity;
-}
-
-/*
-Calculate new player velocities based on gravity.
-Called at a fixed interval independent of framerate.
-*/
-function FixedUpdate() {
-	// gravity is a negative Y acceleration
-	_player.AddVelocity(Vector2(0.0, SceneController.GRAVITY * Time.deltaTime));
 }

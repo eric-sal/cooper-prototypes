@@ -1,4 +1,5 @@
 public static var GRAVITY : float = -32;
+public var player : Player;
 
 // Use this for initialization
 function Start() {
@@ -22,4 +23,5 @@ function FixedUpdate() {
 // It would grab all instances of applicable objects (player, enemies, moveable objects, etc.),
 // loop through the array of objects, and call the related instance methods.
 function ApplyGravity() {
+	player.ApplyGravity();
 }

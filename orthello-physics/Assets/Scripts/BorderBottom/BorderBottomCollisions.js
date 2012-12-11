@@ -1,4 +1,10 @@
 // Destroy everything that enters the collider
 function OnTriggerEnter(other : Collider) {
-	Destroy(other.gameObject);
+	var player = other.GetComponent(Player);
+	
+	if (player) {
+		player.Respawn();
+	} else {
+		Destroy(other.gameObject);
+	}
 }
