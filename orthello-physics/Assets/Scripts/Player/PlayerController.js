@@ -80,23 +80,31 @@ function CollisionCheck(deltaTime : float) : Vector2 {
 		// player is not moving
 		return playerVelocity;
 	}
+
+	var colliderBoundsOffsetX : float = _player.rigidbody.collider.bounds.extents.x;
+	var colliderBoundsOffsetY : float = _player.rigidbody.collider.bounds.extents.y;
+	var skinThickness : float = 0.02; // a little fudge factor
 	
 	// horizontal ray
 	var origin : Vector3 = _player.rigidbody.position;
-	origin.y -= 0.1; // fudge factor for testing
 	var direction : Vector3 = Vector3(playerVelocity.x, 0.0, 0.0);
 	var distance : float = playerVelocity.x * deltaTime;
 	var absoluteDistance : float = Mathf.Abs(distance);
 	if (distance < 0) {
-		origin.x -= _player.rigidbody.collider.bounds.extents.x;
+		origin.x -= colliderBoundsOffsetX;
 	}
 	else {
-		origin.x += _player.rigidbody.collider.bounds.extents.x;
+		origin.x += colliderBoundsOffsetX;
 	}
-	Debug.DrawLine(origin, Vector3(origin.x + distance, origin.y, origin.z), Color.green, .25);
-	
+
+	Debug.DrawLine(Vector3(origin.x, origin.y + colliderBoundsOffsetY - skinThickness, origin.z), Vector3(origin.x + distance, origin.y + colliderBoundsOffsetY - skinThickness, origin.z), Color.green, 0);
+	Debug.DrawLine(origin, Vector3(origin.x + distance, origin.y, origin.z), Color.green, 0);
+	Debug.DrawLine(Vector3(origin.x, origin.y - colliderBoundsOffsetY + skinThickness, origin.z), Vector3(origin.x + distance, origin.y - colliderBoundsOffsetY + skinThickness, origin.z), Color.green, 0);
+
 	var hitInfo : RaycastHit;
-	if (Physics.Raycast(origin, direction, hitInfo, absoluteDistance)) {
+	if (Physics.Raycast(Vector3(origin.x, origin.y + colliderBoundsOffsetY - skinThickness, origin.z), direction, hitInfo, absoluteDistance) ||
+		Physics.Raycast(Vector3(origin.x, origin.y - colliderBoundsOffsetY + skinThickness, origin.z), direction, hitInfo, absoluteDistance) ||
+		Physics.Raycast(Vector3(origin.x, origin.y, origin.z), direction, hitInfo, absoluteDistance)) {
 		Debug.Log("Horizontal Collision");
 		// adjust horizontal velocity to prevent collision
 		if (distance > 0) {
@@ -108,22 +116,25 @@ function CollisionCheck(deltaTime : float) : Vector2 {
 	}
 	
 	// veritcal rays
-	// TODO: Seperate checks for shoulders
 	origin = _player.rigidbody.position;
 	direction = Vector3(0.0, playerVelocity.y, 0.0);
 	distance = playerVelocity.y * deltaTime;
 	absoluteDistance = Mathf.Abs(distance);
 	if (distance < 0) {
-		origin.y -= _player.rigidbody.collider.bounds.extents.y - 0.02; // a little fudge factor
+		origin.y -= colliderBoundsOffsetY - skinThickness;
 	}
 	else {
-		origin.y += _player.rigidbody.collider.bounds.extents.y;
+		origin.y += colliderBoundsOffsetY;
 	}
-	Debug.DrawLine(origin, Vector3(origin.x, origin.y + distance, origin.z), Color.magenta, .25);
+
+	Debug.DrawLine(Vector3(origin.x + colliderBoundsOffsetX - skinThickness, origin.y, origin.z), Vector3(origin.x + colliderBoundsOffsetX - skinThickness, origin.y + distance, origin.z), Color.magenta, 0);
+	Debug.DrawLine(origin, Vector3(origin.x, origin.y + distance, origin.z), Color.magenta, 0);
+	Debug.DrawLine(Vector3(origin.x - colliderBoundsOffsetX + skinThickness, origin.y, origin.z), Vector3(origin.x - colliderBoundsOffsetX + skinThickness, origin.y + distance, origin.z), Color.magenta, 0);
 	
-	if (Physics.Raycast(origin, direction, hitInfo, absoluteDistance)) {
+	if (Physics.Raycast(Vector3(origin.x + colliderBoundsOffsetX - skinThickness, origin.y, origin.z), direction, hitInfo, absoluteDistance) ||
+		Physics.Raycast(Vector3(origin.x - colliderBoundsOffsetX + skinThickness, origin.y, origin.z), direction, hitInfo, absoluteDistance) ||
+		Physics.Raycast(origin, direction, hitInfo, absoluteDistance)) {
 		// adjust vertical velocity to prevent collision
-		
 		if (distance > 0) {
 			// bumped our head
 			Debug.Log("Vertical Collision");
