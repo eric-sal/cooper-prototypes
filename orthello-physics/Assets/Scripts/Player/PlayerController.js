@@ -71,41 +71,38 @@ velocity.  If so, will return a new vector to apply instead that will
 prevent collisions.
 */
 function CollisionCheck(deltaTime : float) : Vector2 {
-	
-	// TODO: Seperate checks for head and feet
 	var playerVelocity : Vector2 = _player.GetVelocity();
-	if (playerVelocity.magnitude == 0) {
-		// player is not moving
-		return playerVelocity;
-	}
-	
-	// horizontal ray
 	var origin : Vector3 = _player.rigidbody.position;
-	var rayOffsetY = Vector3(0, _colliderBoundsOffsetY - _skinThickness, 0);
 	var direction : Vector3 = Vector3(playerVelocity.x, 0, 0).normalized;
-	var distance : float = playerVelocity.x * deltaTime;
-	var absoluteDistance : float = Mathf.Abs(distance) + _colliderBoundsOffsetX + _skinThickness;
-
-	Debug.DrawLine(origin + rayOffsetY, Vector3(origin.x + absoluteDistance, origin.y, origin.z) + rayOffsetY, Color.green, 0);
-	Debug.DrawLine(origin, Vector3(origin.x + absoluteDistance, origin.y, origin.z), Color.green, 0);
-	Debug.DrawLine(origin - rayOffsetY, Vector3(origin.x + absoluteDistance, origin.y, origin.z) - rayOffsetY, Color.green, 0);
-
+	var distance : float;
+	var absoluteDistance : float;
 	var hitInfo : RaycastHit;
-	if (Physics.Raycast(origin + rayOffsetY, direction, hitInfo, absoluteDistance) ||
-		Physics.Raycast(origin - rayOffsetY, direction, hitInfo, absoluteDistance) ||
-		Physics.Raycast(origin, direction, hitInfo, absoluteDistance)) {
-		// adjust horizontal velocity to prevent collision
-		playerVelocity.x = 0;
-
-		if (direction == Vector3.right) {
-			_player.GetSprite().position.x += hitInfo.distance - _colliderBoundsOffsetX;
-		} else {
-			_player.GetSprite().position.x -= hitInfo.distance - _colliderBoundsOffsetX;
+	
+	// horizontal rays
+	if (direction.sqrMagnitude != 0) {	// if we're not moving horizontally, then don't cast any rays
+		var rayOffsetY = Vector3(0, _colliderBoundsOffsetY - _skinThickness, 0);
+		distance = playerVelocity.x * deltaTime;
+		absoluteDistance = Mathf.Abs(distance) + _colliderBoundsOffsetX + _skinThickness;
+	
+		Debug.DrawLine(origin + rayOffsetY, Vector3(origin.x + absoluteDistance, origin.y, origin.z) + rayOffsetY, Color.green, 0);
+		Debug.DrawLine(origin, Vector3(origin.x + absoluteDistance, origin.y, origin.z), Color.green, 0);
+		Debug.DrawLine(origin - rayOffsetY, Vector3(origin.x + absoluteDistance, origin.y, origin.z) - rayOffsetY, Color.green, 0);
+		
+		if (Physics.Raycast(origin + rayOffsetY, direction, hitInfo, absoluteDistance) ||
+			Physics.Raycast(origin - rayOffsetY, direction, hitInfo, absoluteDistance) ||
+			Physics.Raycast(origin, direction, hitInfo, absoluteDistance)) {
+			// adjust horizontal velocity to prevent collision
+			playerVelocity.x = 0;
+	
+			if (direction == Vector3.right) {
+				_player.GetSprite().position.x += hitInfo.distance - _colliderBoundsOffsetX;
+			} else {
+				_player.GetSprite().position.x -= hitInfo.distance - _colliderBoundsOffsetX;
+			}
 		}
 	}
 	
 	// veritcal rays
-	origin = _player.rigidbody.position;
 	var rayOffsetX = Vector3(_colliderBoundsOffsetX - _skinThickness, 0, 0);
 	direction = Vector3(0, playerVelocity.y, 0).normalized;
 	distance = playerVelocity.y * deltaTime;
@@ -130,7 +127,7 @@ function CollisionCheck(deltaTime : float) : Vector2 {
 			_player.GetSprite().position.y -= hitInfo.distance - _colliderBoundsOffsetY;
 		}
 	} else {
-		_player.NotOnLand();
+		_player.isGrounded = false;
 	}
 	
 	return playerVelocity;

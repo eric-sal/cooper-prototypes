@@ -12,7 +12,8 @@ private var _facing : Vector2;
 private var _velocity : Vector2;
 private var _isWalking : boolean = false;
 private var _isJumping : boolean = false;
-private var _isGrounded : boolean = false;
+
+var isGrounded : boolean = false;
 
 // Use this for initialization of the player
 function Start() {
@@ -78,19 +79,14 @@ function IsJumping() : boolean {
 function OnJump() {
 	// we can only jump if we're not already jumping or falling
 	if (!_isJumping && Mathf.Abs(_velocity.y) <= 2) {
-		_isGrounded = false;
 		_isJumping = true;
 		// the controller will stop us when appropriate
 		_velocity.y += JUMP_SPEED;
 	}
 }
 
-function NotOnLand() {
-	_isGrounded = false;
-}
-
 function OnLand() {
-	_isGrounded = true;
+	isGrounded = true;
 	_isJumping = false;
 }
 
@@ -105,7 +101,7 @@ Called at a fixed interval independent of framerate.
 */
 function ApplyGravity() {
 	var y : float = SceneController.GRAVITY * Time.deltaTime;
-	if (_isGrounded) {
+	if (isGrounded) {
 		y = 0.0;
 	}
 
