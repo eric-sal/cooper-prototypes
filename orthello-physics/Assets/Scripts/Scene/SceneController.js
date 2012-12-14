@@ -1,4 +1,4 @@
-public static var GRAVITY : float = -32;
+public static var GRAVITY : float = -46;
 public var player : Player;
 
 // Use this for initialization

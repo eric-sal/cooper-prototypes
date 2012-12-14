@@ -1,5 +1,5 @@
-public static var WALK_SPEED = 7;
-public static var JUMP_SPEED = 18;
+public static var WALK_SPEED : float = 8;
+public static var JUMP_SPEED : float = 21.5;
 
 private var _sprite : OTAnimatingSprite;
 
@@ -12,11 +12,11 @@ private var _facing : Vector2;
 private var _velocity : Vector2;
 private var _isWalking : boolean = false;
 private var _isJumping : boolean = false;
+private var _isGrounded : boolean = false;
 
 // Use this for initialization of the player
 function Start() {
 	_sprite = GetComponent(OTAnimatingSprite);
-	_sprite.InitCallBacks(this);
 	_startingPosition = _sprite.position;
 	_facing = Vector2.right;
 	_velocity = Vector2.zero;
@@ -78,13 +78,19 @@ function IsJumping() : boolean {
 function OnJump() {
 	// we can only jump if we're not already jumping or falling
 	if (!_isJumping && Mathf.Abs(_velocity.y) <= 2) {
+		_isGrounded = false;
 		_isJumping = true;
 		// the controller will stop us when appropriate
 		_velocity.y += JUMP_SPEED;
 	}
 }
 
+function NotOnLand() {
+	_isGrounded = false;
+}
+
 function OnLand() {
+	_isGrounded = true;
 	_isJumping = false;
 }
 
@@ -98,5 +104,10 @@ Calculate new player velocities based on gravity.
 Called at a fixed interval independent of framerate.
 */
 function ApplyGravity() {
-	AddVelocity(Vector2(0.0, SceneController.GRAVITY * Time.deltaTime));
+	var y : float = SceneController.GRAVITY * Time.deltaTime;
+	if (_isGrounded) {
+		y = 0.0;
+	}
+
+	AddVelocity(Vector2(0.0, y));
 }

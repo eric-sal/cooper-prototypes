@@ -9,7 +9,7 @@ function Start() {
 }
 
 // Update is called once per frame
-function Update() {
+function FixedUpdate() {
 	if (_player.IsFacingRight()) {
 		if (_player.GetIsWalking()) {
 			if (_currentAnimation != Animations.WalkRight) {
