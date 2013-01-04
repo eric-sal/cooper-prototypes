@@ -58,6 +58,12 @@ function FixedUpdate() {
 
 	// move the player
 	var v : Vector2 = _player.GetVelocity();
+	
+	// show the velocity vector as a line for debugging, double the length for more visibility
+	var origin : Vector3 = _player.rigidbody.position;
+	var endPoint : Vector3 = Vector3(origin.x + v.x, origin.y + v.y, origin.z);
+	Debug.DrawLine(origin, endPoint, Color.blue, 0);
+	
 	var sprite : OTAnimatingSprite = _player.GetSprite();
 	sprite.position.x += v.x * dt;
 	sprite.position.y += v.y * dt;
