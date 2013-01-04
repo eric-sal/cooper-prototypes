@@ -85,7 +85,7 @@ function CollisionCheck(deltaTime : float) : Vector2 {
 	var hitInfo : RaycastHit;
 	
 	// horizontal rays
-	if (direction.sqrMagnitude != 0) {	// if we're not moving horizontally, then don't cast any rays
+	if (direction.x != 0) {	// if we're not moving horizontally, then don't cast any rays
 		var rayOffsetY = Vector3(0, _colliderBoundsOffsetY - _skinThickness, 0);
 		distance = playerVelocity.x * deltaTime;
 		absoluteDistance = Mathf.Abs(distance) + _colliderBoundsOffsetX + _skinThickness;
@@ -105,6 +105,26 @@ function CollisionCheck(deltaTime : float) : Vector2 {
 			} else {
 				_player.GetSprite().position.x -= hitInfo.distance - _colliderBoundsOffsetX;
 			}
+		} else {
+			// check for diagonal collisions
+			direction = playerVelocity.normalized;
+			distance = playerVelocity.magnitude * deltaTime;
+			
+			dx = _colliderBoundsOffsetX - _skinThickness;
+			dy = _colliderBoundsOffsetY - _skinThickness;
+			
+			Debug.DrawLine(origin + Vector3(dx, dy, 0), origin + Vector3(dx + playerVelocity.x, dy + playerVelocity.y, 0), Color.magenta, 0);
+			Debug.DrawLine(origin + Vector3(dx, -dy, 0), origin + Vector3(dx + playerVelocity.x, -dy + playerVelocity.y, 0), Color.magenta, 0);
+			Debug.DrawLine(origin + Vector3(-dx, dy, 0), origin + Vector3(-dx + playerVelocity.x, dy + playerVelocity.y, 0), Color.magenta, 0);
+			Debug.DrawLine(origin + Vector3(-dx, -dy, 0), origin + Vector3(-dx + playerVelocity.x, -dy + playerVelocity.y, 0), Color.magenta, 0);
+			
+			// TODO: Only 3 of these are actually really needed
+			if (Physics.Raycast(origin + Vector3(dx, dy, 0), direction, hitInfo, distance) ||
+			    Physics.Raycast(origin + Vector3(dx, -dy, 0), direction, hitInfo, distance) ||
+			    Physics.Raycast(origin + Vector3(-dx, dy, 0), direction, hitInfo, distance) ||
+			    Physics.Raycast(origin + Vector3(-dx, -dy, 0), direction, hitInfo, distance)) {
+				// TODO
+			}
 		}
 	}
 	
@@ -114,9 +134,11 @@ function CollisionCheck(deltaTime : float) : Vector2 {
 	distance = playerVelocity.y * deltaTime;
 	absoluteDistance = Mathf.Abs(distance) + _colliderBoundsOffsetY + _skinThickness;
 
+	/*
 	Debug.DrawLine(origin + rayOffsetX, Vector3(origin.x, origin.y + absoluteDistance, origin.z) + rayOffsetX, Color.magenta, 0);
 	Debug.DrawLine(origin, Vector3(origin.x, origin.y + absoluteDistance, origin.z), Color.magenta, 0);
 	Debug.DrawLine(origin - rayOffsetX, Vector3(origin.x, origin.y + absoluteDistance, origin.z) - rayOffsetX, Color.magenta, 0);
+	*/
 	
 	if (Physics.Raycast(origin + rayOffsetX, direction, hitInfo, absoluteDistance) ||
 		Physics.Raycast(origin - rayOffsetX, direction, hitInfo, absoluteDistance) ||
