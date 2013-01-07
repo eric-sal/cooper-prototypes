@@ -58,12 +58,6 @@ function FixedUpdate() {
 
 	// move the player
 	var v : Vector2 = _player.GetVelocity();
-	
-	// show the velocity vector as a line for debugging
-	var origin : Vector3 = _player.rigidbody.position;
-	var endPoint : Vector3 = Vector3(origin.x + v.x, origin.y + v.y, origin.z);
-	Debug.DrawLine(origin, endPoint, Color.blue, 0);
-	
 	var sprite : OTAnimatingSprite = _player.GetSprite();
 	sprite.position.x += v.x * dt;
 	sprite.position.y += v.y * dt;
@@ -89,10 +83,6 @@ function CollisionCheck(deltaTime : float) : Vector2 {
 		var rayOffsetY = Vector3(0, _colliderBoundsOffsetY - _skinThickness, 0);
 		distance = playerVelocity.x * deltaTime;
 		absoluteDistance = Mathf.Abs(distance) + _colliderBoundsOffsetX + _skinThickness;
-	
-		Debug.DrawLine(origin + rayOffsetY, Vector3(origin.x + absoluteDistance, origin.y, origin.z) + rayOffsetY, Color.green, 0);
-		Debug.DrawLine(origin, Vector3(origin.x + absoluteDistance, origin.y, origin.z), Color.green, 0);
-		Debug.DrawLine(origin - rayOffsetY, Vector3(origin.x + absoluteDistance, origin.y, origin.z) - rayOffsetY, Color.green, 0);
 		
 		if (Physics.Raycast(origin + rayOffsetY, direction, hitInfo, absoluteDistance) ||
 			Physics.Raycast(origin - rayOffsetY, direction, hitInfo, absoluteDistance) ||
@@ -105,26 +95,10 @@ function CollisionCheck(deltaTime : float) : Vector2 {
 			} else {
 				_player.GetSprite().position.x -= hitInfo.distance - _colliderBoundsOffsetX;
 			}
-		} else {
-			// check for diagonal collisions
-			direction = playerVelocity.normalized;
-			distance = playerVelocity.magnitude * deltaTime;
-			
-			dx = _colliderBoundsOffsetX - _skinThickness;
-			dy = _colliderBoundsOffsetY - _skinThickness;
-			
-			Debug.DrawLine(origin + Vector3(dx, dy, 0), origin + Vector3(dx + playerVelocity.x, dy + playerVelocity.y, 0), Color.magenta, 0);
-			Debug.DrawLine(origin + Vector3(dx, -dy, 0), origin + Vector3(dx + playerVelocity.x, -dy + playerVelocity.y, 0), Color.magenta, 0);
-			Debug.DrawLine(origin + Vector3(-dx, dy, 0), origin + Vector3(-dx + playerVelocity.x, dy + playerVelocity.y, 0), Color.magenta, 0);
-			Debug.DrawLine(origin + Vector3(-dx, -dy, 0), origin + Vector3(-dx + playerVelocity.x, -dy + playerVelocity.y, 0), Color.magenta, 0);
-			
-			// TODO: Only 3 of these are actually really needed
-			if (Physics.Raycast(origin + Vector3(dx, dy, 0), direction, hitInfo, distance) ||
-			    Physics.Raycast(origin + Vector3(dx, -dy, 0), direction, hitInfo, distance) ||
-			    Physics.Raycast(origin + Vector3(-dx, dy, 0), direction, hitInfo, distance) ||
-			    Physics.Raycast(origin + Vector3(-dx, -dy, 0), direction, hitInfo, distance)) {
-				// TODO
-			}
+		}
+		else {
+			// we didn't have a horizontal collision, so offset the vertical rays by the amount the player moved
+			origin.x += distance;
 		}
 	}
 	
@@ -133,12 +107,6 @@ function CollisionCheck(deltaTime : float) : Vector2 {
 	direction = Vector3(0, playerVelocity.y, 0).normalized;
 	distance = playerVelocity.y * deltaTime;
 	absoluteDistance = Mathf.Abs(distance) + _colliderBoundsOffsetY + _skinThickness;
-
-	/*
-	Debug.DrawLine(origin + rayOffsetX, Vector3(origin.x, origin.y + absoluteDistance, origin.z) + rayOffsetX, Color.magenta, 0);
-	Debug.DrawLine(origin, Vector3(origin.x, origin.y + absoluteDistance, origin.z), Color.magenta, 0);
-	Debug.DrawLine(origin - rayOffsetX, Vector3(origin.x, origin.y + absoluteDistance, origin.z) - rayOffsetX, Color.magenta, 0);
-	*/
 	
 	if (Physics.Raycast(origin + rayOffsetX, direction, hitInfo, absoluteDistance) ||
 		Physics.Raycast(origin - rayOffsetX, direction, hitInfo, absoluteDistance) ||
