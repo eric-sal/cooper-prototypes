@@ -141,7 +141,11 @@
         </struct>
         <key>fileList</key>
         <array>
-            <filename>blocks</filename>
+            <filename>blocks/bricks</filename>
+            <filename>blocks/coins</filename>
+            <filename>blocks/ground</filename>
+            <filename>blocks/misc</filename>
+            <filename>blocks/question</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
