@@ -85,10 +85,6 @@ function CollisionCheck(deltaTime : float) : Vector2 {
 		var rayOffsetY = Vector3(0, _colliderBoundsOffsetY - _skinThickness, 0);
 		distance = playerVelocity.x * deltaTime;
 		absoluteDistance = Mathf.Abs(distance) + _colliderBoundsOffsetX + _skinThickness;
-	
-		Debug.DrawLine(origin + rayOffsetY, Vector3(origin.x + absoluteDistance, origin.y, origin.z) + rayOffsetY, Color.green, 0);
-		Debug.DrawLine(origin, Vector3(origin.x + absoluteDistance, origin.y, origin.z), Color.green, 0);
-		Debug.DrawLine(origin - rayOffsetY, Vector3(origin.x + absoluteDistance, origin.y, origin.z) - rayOffsetY, Color.green, 0);
 		
 		if (Physics.Raycast(origin + rayOffsetY, direction, hitInfo, absoluteDistance) ||
 			Physics.Raycast(origin - rayOffsetY, direction, hitInfo, absoluteDistance) ||
@@ -101,18 +97,19 @@ function CollisionCheck(deltaTime : float) : Vector2 {
 			} else {
 				_player.GetSprite().position.x -= hitInfo.distance - _colliderBoundsOffsetX;
 			}
+		} else {
+			// we didn't have a horizontal collision, so offset the vertical rays by the amount the player moved
+			origin.x += distance;
 		}
 	}
 	
 	// veritcal rays
 	var rayOffsetX = Vector3(_colliderBoundsOffsetX - _skinThickness, 0, 0);
-	direction = Vector3(0, playerVelocity.y, 0).normalized;
+	
+	// if the player is not currently traveling in the y direction, always be checking to see if we're on the ground
+	direction = (playerVelocity.y == 0) ? -Vector3.up : Vector3(0, playerVelocity.y, 0).normalized;
 	distance = playerVelocity.y * deltaTime;
 	absoluteDistance = Mathf.Abs(distance) + _colliderBoundsOffsetY + _skinThickness;
-
-	Debug.DrawLine(origin + rayOffsetX, Vector3(origin.x, origin.y + absoluteDistance, origin.z) + rayOffsetX, Color.magenta, 0);
-	Debug.DrawLine(origin, Vector3(origin.x, origin.y + absoluteDistance, origin.z), Color.magenta, 0);
-	Debug.DrawLine(origin - rayOffsetX, Vector3(origin.x, origin.y + absoluteDistance, origin.z) - rayOffsetX, Color.magenta, 0);
 	
 	if (Physics.Raycast(origin + rayOffsetX, direction, hitInfo, absoluteDistance) ||
 		Physics.Raycast(origin - rayOffsetX, direction, hitInfo, absoluteDistance) ||

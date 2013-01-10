@@ -1,7 +1,7 @@
 #pragma strict
 
 public static var WALK_SPEED : float = 150;
-public static var JUMP_SPEED : float = 250;
+public static var JUMP_SPEED : float = 300;
 
 private var _sprite : OTAnimatingSprite;
 
@@ -93,8 +93,7 @@ function OnLand() {
 }
 
 function Respawn() {
-	_sprite.position.y = 10;
-	_sprite.position.x = 0;
+	_sprite.position = _startingPosition;
 }
 
 /*

@@ -1,6 +1,6 @@
 #pragma strict
 
-public static var GRAVITY : float = -400;
+public static var GRAVITY : float = -600;
 public var player : Player;
 
 // Use this for initialization
