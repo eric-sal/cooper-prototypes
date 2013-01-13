@@ -120,6 +120,9 @@ function CollisionCheck(deltaTime : float) : Vector2 {
 		if (direction == Vector3.up) {
 			// bumped our head
 			_player.GetSprite().position.y += hitInfo.distance - _colliderBoundsOffsetY;
+			
+			// let the object we hit know that we hit the bottom of it
+			hitInfo.collider.SendMessage("BottomHit");
 		} else {
 			// hit the gound
 			_player.OnLand();
