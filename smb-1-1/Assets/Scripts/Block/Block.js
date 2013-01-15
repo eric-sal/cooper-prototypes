@@ -15,7 +15,8 @@ function Start() {
 
 // This is probably not the best way to animate the block moving.
 // Also, this should probably be moved to BlockAnimation.js.
-function Update() {
+// Since we're moving the position of the sprite, we want this in FixedUpdate.
+function FixedUpdate() {
 	if (springiness > 0) {
 		var direction = _hit ? 1 : -1;
 		
@@ -24,7 +25,7 @@ function Update() {
 		}
 		
 		if (_hit || _sprite.position.y != _startingPosition.y) {
-			_sprite.position.y += 1.5 * direction;
+			_sprite.position.y += 2 * direction;
 		}
 	}
 }

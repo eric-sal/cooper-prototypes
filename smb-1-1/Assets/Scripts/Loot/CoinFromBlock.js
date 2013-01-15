@@ -12,6 +12,11 @@ function Awake() {
 	_sprite.animation = GameObject.Find('OT/Animations/CoinFromBlock').GetComponent(OTAnimation);
 }
 
+function Start() {
+	// we found a coin, so increment our coin count
+	GameObject.Find('Mario').GetComponent(Player).coins += 1;	// Why doesn't this work?!?!?!
+}
+
 // These objects should only be instantiated after a CoinBlock has been hit.
 // We want to animate the movement of the coin coming out of the top of the block.
 // Setting destroyWhenFinished to true on the CoinFromBlock prefab, will destroy

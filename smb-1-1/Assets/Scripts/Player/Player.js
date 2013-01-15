@@ -3,6 +3,10 @@
 public static var WALK_SPEED : float = 150;
 public static var JUMP_SPEED : float = 300;
 
+public var score : int = 0;
+public var lives : int = 3;
+public var coins : int = 0;
+
 private var _sprite : OTAnimatingSprite;
 
 // this is the location where the player respawns
