@@ -1,8 +1,6 @@
 #pragma strict
 
 private var _sprite : OTAnimatingSprite;
-private var _transform : Transform;
-private var _currentFrame : int = 0;
 
 // Use Awake(), rather than Start(), as Awake() is called immediately when the object is instantiated.
 function Awake() {

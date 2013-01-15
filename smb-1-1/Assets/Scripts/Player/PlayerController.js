@@ -29,7 +29,7 @@ function Update() {
 
 	if (Input.GetButtonDown("Jump")) {
 		// this will do nothing if the player is already jumping
-		_player.OnJump();
+		_player.OnEventJump();
 	}
 }
 
@@ -122,10 +122,10 @@ function CollisionCheck(deltaTime : float) : Vector2 {
 			_player.GetSprite().position.y += hitInfo.distance - _colliderBoundsOffsetY;
 			
 			// let the object we hit know that we hit the bottom of it
-			hitInfo.collider.SendMessage("BottomHit");
+			hitInfo.collider.SendMessage("OnEventBottomHit");
 		} else {
 			// hit the gound
-			_player.OnLand();
+			_player.OnEventLand();
 			_player.GetSprite().position.y -= hitInfo.distance - _colliderBoundsOffsetY;
 		}
 	} else {

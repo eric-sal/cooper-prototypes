@@ -1,14 +1,14 @@
 #pragma strict
-	
-public static var MAX_OFFSET = 3;
 
+// when a block is hit from the bottom, how many pixels does it get displaced?
+public var springiness : int = 0;
 public var disabled : boolean = false;
 
 private var _sprite : OTSprite;
 private var _startingPosition : Vector2;
 private var _hit : boolean = false;
 
-function Start () {
+function Start() {
 	_sprite = GetComponent(OTSprite);
 	_startingPosition = _sprite.position;
 }
@@ -16,14 +16,16 @@ function Start () {
 // This is probably not the best way to animate the block moving.
 // Also, this should probably be moved to BlockAnimation.js.
 function Update() {
-	var direction = _hit ? 1 : -1;
-	
-	if (_hit && _sprite.position.y >= _startingPosition.y + MAX_OFFSET) {
-		_hit = false;
-	}
-	
-	if (_hit || _sprite.position.y != _startingPosition.y) {
-		_sprite.position.y += 1 * direction;
+	if (springiness > 0) {
+		var direction = _hit ? 1 : -1;
+		
+		if (_hit && _sprite.position.y >= _startingPosition.y + springiness) {
+			_hit = false;
+		}
+		
+		if (_hit || _sprite.position.y != _startingPosition.y) {
+			_sprite.position.y += 1.5 * direction;
+		}
 	}
 }
 
@@ -31,16 +33,17 @@ function Update() {
 // object was struck - whether it was the top or bottom. And I couldn't get the Unity 3d
 // OnCollisionEnter callback to fire. Decided on using Component.SendMessage to send the message
 // from the PlayerController to whichever object it hit.
-function BottomHit() {
+function OnEventBottomHit() {
 	if (!disabled) {
 		_hit = true;
 	}
 }
 
-function GetSprite() {
-	return _sprite;
-}
-
 function GetStartingPosition() {
 	return _startingPosition;
+}
+
+function Disable() {
+	disabled = true;
+	_sprite.frameIndex = 19;
 }

@@ -47,12 +47,10 @@ function IsFacingLeft() : boolean {
 	return _facing != Vector2.right;
 }
 
-// TODO: Rename to IsWalking
 function GetIsWalking() : boolean {
 	return _isWalking;
 }
 
-// TODO: Use OnWalk and OnStop instead
 function SetIsWalking(val : boolean) {
 	_isWalking = val;
 }
@@ -78,16 +76,17 @@ function IsJumping() : boolean {
 	return _isJumping;
 }
 
-function OnJump() {
+function OnEventJump() {
 	// we can only jump if we're not already jumping or falling
-	if (!_isJumping && Mathf.Abs(_velocity.y) <= 2) {
+	// or if we have *just* walked off a ledge
+	if (!_isJumping && Mathf.Abs(_velocity.y) <= 50) {
 		_isJumping = true;
 		// the controller will stop us when appropriate
 		_velocity.y += JUMP_SPEED;
 	}
 }
 
-function OnLand() {
+function OnEventLand() {
 	isGrounded = true;
 	_isJumping = false;
 }
