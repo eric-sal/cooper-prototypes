@@ -6,28 +6,10 @@ public var disabled : boolean = false;
 
 private var _sprite : OTSprite;
 private var _startingPosition : Vector2;
-private var _hit : boolean = false;
 
 function Start() {
 	_sprite = GetComponent(OTSprite);
 	_startingPosition = _sprite.position;
-}
-
-// This is probably not the best way to animate the block moving.
-// Also, this should probably be moved to BlockAnimation.js.
-// Since we're moving the position of the sprite, we want this in FixedUpdate.
-function FixedUpdate() {
-	if (springiness > 0) {
-		var direction = _hit ? 1 : -1;
-		
-		if (_hit && _sprite.position.y >= _startingPosition.y + springiness) {
-			_hit = false;
-		}
-		
-		if (_hit || _sprite.position.y != _startingPosition.y) {
-			_sprite.position.y += 2 * direction;
-		}
-	}
 }
 
 // Considered using the Orthello 2d OnCollision callback, but we can't tell what side of the 
@@ -36,7 +18,11 @@ function FixedUpdate() {
 // from the PlayerController to whichever object it hit.
 function OnEventBottomHit() {
 	if (!disabled) {
-		_hit = true;
+		if (springiness > 0) {
+			var currentPosition : Vector3 = _sprite.position;
+			var apex : Vector3 = currentPosition + (Vector3.up * springiness);
+			iTween.MoveTo(gameObject, { 'path': [apex, currentPosition], 'easetype': 'linear', 'time': 0.15 });
+		}
 	}
 }
 

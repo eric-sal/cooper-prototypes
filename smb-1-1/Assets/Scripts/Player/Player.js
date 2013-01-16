@@ -18,12 +18,14 @@ private var _facing : Vector2;
 private var _velocity : Vector2;
 private var _isWalking : boolean = false;
 private var _isJumping : boolean = false;
+private var _isDead : boolean = false;
 
 var isGrounded : boolean = false;
 
 // Use this for initialization of the player
 function Start() {
 	_sprite = GetComponent(OTAnimatingSprite);
+	_sprite.ShowFrame(6);	// ensure we're looking right
 	_startingPosition = _sprite.position;
 	_facing = Vector2.right;
 	_velocity = Vector2.zero;
@@ -95,7 +97,18 @@ function OnEventLand() {
 	_isJumping = false;
 }
 
+function IsDead() {
+	return _isDead;
+}
+
+function OnEnterBottomBounds() {
+	lives -= 1;
+	_isDead = true;
+}
+
 function Respawn() {
+	_isDead = false;
+	_sprite.ShowFrame(6);
 	_sprite.position = _startingPosition;
 }
 

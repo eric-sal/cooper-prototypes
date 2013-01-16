@@ -14,7 +14,8 @@ function Awake() {
 
 function Start() {
 	// we found a coin, so increment our coin count
-	GameObject.Find('Mario').GetComponent(Player).coins += 1;	// Why doesn't this work?!?!?!
+	// GameObject.Find('Mario').GetComponent(Player).coins += 1;		// Why doesn't this work?!?!?!
+	GameObject.FindWithTag('Player').GetComponent(Player).coins += 1;	// ...but this does.
 }
 
 // These objects should only be instantiated after a CoinBlock has been hit.
