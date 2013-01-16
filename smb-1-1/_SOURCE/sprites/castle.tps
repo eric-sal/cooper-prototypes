@@ -2,7 +2,7 @@
 <data version="1.0">
     <struct type="Settings">
         <key>fileFormatVersion</key>
-        <int>0</int>
+        <int>1</int>
         <key>variation</key>
         <string>main</string>
         <key>verbose</key>
@@ -143,6 +143,7 @@
         <array>
             <filename>scenery/castle.png</filename>
             <filename>scenery/flag-pole.png</filename>
+            <filename>blocks/misc/flag.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

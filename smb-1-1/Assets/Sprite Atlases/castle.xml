@@ -30,6 +30,19 @@
                 <key>sourceSize</key>
                 <string>{16,168}</string>
             </dict>
+            <key>flag.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{102,2},{16,16}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{16,16}}</string>
+                <key>sourceSize</key>
+                <string>{16,16}</string>
+            </dict>
         </dict>
         <key>metadata</key>
         <dict>
@@ -40,7 +53,7 @@
             <key>size</key>
             <string>{128,256}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:814b21924a01fc32270a965530ae33f1$</string>
+            <string>$TexturePacker:SmartUpdate:7bb29456ed50daa432e213eb65f106a4$</string>
             <key>textureFileName</key>
             <string>castle.png</string>
         </dict>
