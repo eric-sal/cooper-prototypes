@@ -7,20 +7,20 @@
             <key>death.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{0,0},{15,14}}</string>
+                <string>{{0,0},{17,16}}</string>
                 <key>offset</key>
-                <string>{-1,0}</string>
+                <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,1},{15,14}}</string>
+                <string>{{0,0},{17,16}}</string>
                 <key>sourceSize</key>
                 <string>{17,16}</string>
             </dict>
             <key>jump-left.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{16,0},{17,16}}</string>
+                <string>{{18,0},{17,16}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -33,7 +33,7 @@
             <key>jump-right.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{34,0},{17,16}}</string>
+                <string>{{36,0},{17,16}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -43,88 +43,101 @@
                 <key>sourceSize</key>
                 <string>{17,16}</string>
             </dict>
-            <key>slide-left.png</key>
+            <key>pole-slide.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{52,0},{15,16}}</string>
+                <string>{{54,0},{13,15}}</string>
                 <key>offset</key>
-                <string>{-1,0}</string>
+                <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{15,16}}</string>
+                <string>{{0,0},{13,15}}</string>
+                <key>sourceSize</key>
+                <string>{13,15}</string>
+            </dict>
+            <key>slide-left.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{68,0},{17,16}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{17,16}}</string>
                 <key>sourceSize</key>
                 <string>{17,16}</string>
             </dict>
             <key>slide-right.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{68,0},{15,16}}</string>
+                <string>{{86,0},{17,16}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{1,0},{15,16}}</string>
+                <string>{{0,0},{17,16}}</string>
                 <key>sourceSize</key>
                 <string>{17,16}</string>
             </dict>
             <key>stand-left.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{84,0},{13,16}}</string>
+                <string>{{104,0},{17,16}}</string>
                 <key>offset</key>
-                <string>{1,0}</string>
+                <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{3,0},{13,16}}</string>
+                <string>{{0,0},{17,16}}</string>
                 <key>sourceSize</key>
                 <string>{17,16}</string>
             </dict>
             <key>stand-right.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{98,0},{13,16}}</string>
+                <string>{{122,0},{17,16}}</string>
                 <key>offset</key>
-                <string>{-1,0}</string>
+                <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{1,0},{13,16}}</string>
+                <string>{{0,0},{17,16}}</string>
                 <key>sourceSize</key>
                 <string>{17,16}</string>
             </dict>
             <key>walk-left-0.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{112,0},{13,16}}</string>
+                <string>{{140,0},{17,16}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{2,0},{13,16}}</string>
+                <string>{{0,0},{17,16}}</string>
                 <key>sourceSize</key>
                 <string>{17,16}</string>
             </dict>
             <key>walk-left-1.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{126,0},{15,16}}</string>
+                <string>{{158,0},{17,16}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{1,0},{15,16}}</string>
+                <string>{{0,0},{17,16}}</string>
                 <key>sourceSize</key>
                 <string>{17,16}</string>
             </dict>
             <key>walk-left-2.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{142,0},{17,16}}</string>
+                <string>{{176,0},{17,16}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -137,33 +150,33 @@
             <key>walk-right-0.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{160,0},{13,16}}</string>
+                <string>{{194,0},{17,16}}</string>
                 <key>offset</key>
-                <string>{-1,0}</string>
+                <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{1,0},{13,16}}</string>
+                <string>{{0,0},{17,16}}</string>
                 <key>sourceSize</key>
                 <string>{17,16}</string>
             </dict>
             <key>walk-right-1.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{174,0},{15,16}}</string>
+                <string>{{212,0},{17,16}}</string>
                 <key>offset</key>
-                <string>{-1,0}</string>
+                <string>{0,0}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{15,16}}</string>
+                <string>{{0,0},{17,16}}</string>
                 <key>sourceSize</key>
                 <string>{17,16}</string>
             </dict>
             <key>walk-right-2.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{190,0},{17,16}}</string>
+                <string>{{230,0},{17,16}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -183,7 +196,7 @@
             <key>size</key>
             <string>{256,16}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:45f990e5755438a9d6e24c88ca6f755b$</string>
+            <string>$TexturePacker:SmartUpdate:5aab53af6aca8a91af78eee7827ff363$</string>
             <key>textureFileName</key>
             <string>mario.png</string>
         </dict>

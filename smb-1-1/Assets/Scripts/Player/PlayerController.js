@@ -1,6 +1,8 @@
 #pragma strict
 
+private var _playerInputDisabled : boolean = false;
 private var _player : Player;
+private var _sprite : OTAnimatingSprite;
 private var _horizontal : float = 0.0;
 private var _lastVelocity : Vector2 = Vector2(0.0, 0.0);
 
@@ -17,6 +19,8 @@ function Awake() {
 
 // Use this for initialization
 function Start() {
+	// This doesn't work if it's in Awake()?
+	_sprite = _player.GetSprite();
 }
 
 /*
@@ -24,12 +28,14 @@ Detect user input.
 Called once per frame.
 */
 function Update() {
-	// Get the user input
-	_horizontal = Input.GetAxis("Horizontal"); // -1.0 to 1.0
-
-	if (Input.GetButtonDown("Jump")) {
-		// this will do nothing if the player is already jumping
-		_player.OnEventJump();
+	if (!_playerInputDisabled) {
+		// Get the user input
+		_horizontal = Input.GetAxis("Horizontal"); // -1.0 to 1.0
+	
+		if (Input.GetButtonDown("Jump")) {
+			// this will do nothing if the player is already jumping
+			_player.OnEventJump();
+		}
 	}
 }
 
@@ -60,9 +66,8 @@ function FixedUpdate() {
 
 	// move the player
 	var v : Vector2 = _player.GetVelocity();
-	var sprite : OTAnimatingSprite = _player.GetSprite();
-	sprite.position.x += v.x * dt;
-	sprite.position.y += v.y * dt;
+	_sprite.position.x += v.x * dt;
+	_sprite.position.y += v.y * dt;
 	
 	_lastVelocity = v;
 }
@@ -93,9 +98,9 @@ function CollisionCheck(deltaTime : float) : Vector2 {
 			playerVelocity.x = 0;
 	
 			if (direction == Vector3.right) {
-				_player.GetSprite().position.x += hitInfo.distance - _colliderBoundsOffsetX;
+				_sprite.position.x += hitInfo.distance - _colliderBoundsOffsetX;
 			} else {
-				_player.GetSprite().position.x -= hitInfo.distance - _colliderBoundsOffsetX;
+				_sprite.position.x -= hitInfo.distance - _colliderBoundsOffsetX;
 			}
 		} else {
 			// we didn't have a horizontal collision, so offset the vertical rays by the amount the player moved
@@ -119,18 +124,41 @@ function CollisionCheck(deltaTime : float) : Vector2 {
 
 		if (direction == Vector3.up) {
 			// bumped our head
-			_player.GetSprite().position.y += hitInfo.distance - _colliderBoundsOffsetY;
+			_sprite.position.y += hitInfo.distance - _colliderBoundsOffsetY;
 			
 			// let the object we hit know that we hit the bottom of it
 			hitInfo.collider.SendMessage("OnEventBottomHit");
 		} else {
 			// hit the gound
 			_player.OnEventLand();
-			_player.GetSprite().position.y -= hitInfo.distance - _colliderBoundsOffsetY;
+			_sprite.position.y -= hitInfo.distance - _colliderBoundsOffsetY;
 		}
 	} else {
 		_player.isGrounded = false;
 	}
 	
 	return playerVelocity;
+}
+
+// I'm not sure the PlayerController script is the best place for this, but since
+// we take control of the character and move them around, I feel like this must be
+// the best place. Maybe the PlayerAnimation script? Maybe a separate script?
+function LevelComplete() {
+	// Disable player movement, slide them down the pole, and move them to the castle.
+	_sprite.ShowFrame(3);
+	_sprite.position.x += 4;	// for a better snap to the pole
+	_playerInputDisabled = true;
+	_player.SetVelocity(Vector2(0, 0));
+	iTween.MoveTo(gameObject, { 'y': -80, 'easetype': 'linear', 'speed': 150, 'oncomplete': 'WalkRight' });
+}
+
+// Automatically start the player moving to the right.
+function WalkRight() {
+	_horizontal = 0.5;
+}
+
+// Come to a complete stop.
+function StopMoving() {
+	_horizontal = 0;
+	_player.SetVelocity(Vector2(0, 0));
 }

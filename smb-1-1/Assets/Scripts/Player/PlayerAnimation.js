@@ -43,7 +43,7 @@ function FixedUpdate() {
 			} else {
 				if (_currentAnimation != Animations.StandRight) {
 					_currentAnimation = Animations.StandRight;
-					_sprite.ShowFrame(6);
+					_sprite.ShowFrame(7);
 				}
 			}
 		} else {
@@ -61,7 +61,7 @@ function FixedUpdate() {
 			} else {
 				if (_currentAnimation != Animations.StandLeft) {
 					_currentAnimation = Animations.StandLeft;
-					_sprite.ShowFrame(5);
+					_sprite.ShowFrame(6);
 				}
 			}
 		}
