@@ -27,5 +27,5 @@ function FixedUpdate() {
 // It would grab all instances of applicable objects (player, enemies, moveable objects, etc.),
 // loop through the array of objects, and call the related instance methods.
 function ApplyGravity() {
-	player.ApplyGravity();
+	BroadcastMessage('ApplyGravity');
 }
