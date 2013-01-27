@@ -13,7 +13,7 @@ function Start() {
 function OnEventBottomHit() {
 	if (!_block.disabled) {
 		var coin : CoinFromBlock = Instantiate(Resources.Load('loot/CoinFromBlock', CoinFromBlock));
-		coin.SetPosition(_block.GetStartingPosition());
+		coin.SetPosition(_block.StartingPosition());
 		
 		_numberSpawned += 1;
 		if (_numberSpawned == numberAvailable) {

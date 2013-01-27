@@ -1,30 +1,41 @@
 #pragma strict
 
-private var _player : Player;
+private var _character : Character;
 
 private var _sprite : OTAnimatingSprite;
-private var _horizontal : float = 0.0;
-private var _lastVelocity : Vector2 = Vector2(0.0, 0.0);
+private var _horizontal : float;
+private var _velocity : Vector2;
+private var _lastVelocity : Vector2;
 
 private var _colliderBoundsOffsetX : float;
 private var _colliderBoundsOffsetY : float;
 private var _skinThickness : float = 0.01;
 
+private var _isWalking : boolean;
+private var _isJumping : boolean;
+private var _walkSpeed : int;
+private var _jumpSpeed : int;
+
+var isGrounded : boolean;
+
 // called once in the lifetime of the script
 function Awake() {
-	_player = GetComponent(Player);
-	_colliderBoundsOffsetX = _player.rigidbody.collider.bounds.extents.x;
-	_colliderBoundsOffsetY = _player.rigidbody.collider.bounds.extents.y;
+	_character = GetComponent(Character);
+	_colliderBoundsOffsetX = _character.rigidbody.collider.bounds.extents.x;
+	_colliderBoundsOffsetY = _character.rigidbody.collider.bounds.extents.y;
 }
 
 // Use this for initialization
 function Start() {
-	// This doesn't work if it's in Awake()?
+	// set these during initialization to ensure that the values are
+	// properly set when a character is instantiated.
 	_sprite = GetComponent(OTAnimatingSprite);
-}
-
-function SetHorizontal(horizontal : float) {
-	_horizontal = horizontal;
+	_velocity = Vector2.zero;
+	_lastVelocity = _velocity;
+	_horizontal = 0;
+	_isWalking = false;
+	_isJumping = false;
+	isGrounded = false;
 }
 
 /*
@@ -32,58 +43,56 @@ Update player position.
 Called at fix intervals.
 */
 function FixedUpdate() {
+	ApplyGravity();
+
 	// horizontal direction has changed, undo last velocity applied
-	_player.AddVelocity(Vector2(_lastVelocity.x * -1, 0));
+	AddVelocity(Vector2(_lastVelocity.x * -1, 0));
 
 	// apply velocity in new direction
-	_player.AddVelocity(Vector2(Player.WALK_SPEED * _horizontal, 0));
+	AddVelocity(Vector2(_walkSpeed * _horizontal, 0));
 
-	//TODO: Use OnWalk and OnStop instead
-	var absHorizontalVelocity = Mathf.Abs(_player.GetVelocity().x);
-	_player.SetIsWalking(!_player.IsJumping() && absHorizontalVelocity > 0.1 && absHorizontalVelocity >= Mathf.Abs(_lastVelocity.x));
+	var absHorizontalVelocity = Mathf.Abs(_velocity.x);
+	_isWalking = !_isJumping && absHorizontalVelocity > 0.1 && absHorizontalVelocity >= Mathf.Abs(_lastVelocity.x);
 
 	if (_horizontal > 0) {
-		_player.FaceRight();
+		_character.FaceRight();
 	} else if (_horizontal < 0) {
-		_player.FaceLeft();
+		_character.FaceLeft();
 	}
 	
 	// adjust velocity based on collisions (if any)
 	var dt : float = Time.deltaTime;
-	_player.SetVelocity(CollisionCheck(dt));
+	CollisionCheck(dt);
 
 	// move the player
-	var v : Vector2 = _player.GetVelocity();
-	_sprite.position.x += v.x * dt;
-	_sprite.position.y += v.y * dt;
+	_sprite.position.x += _velocity.x * dt;
+	_sprite.position.y += _velocity.y * dt;
 	
-	_lastVelocity = v;
+	_lastVelocity = _velocity;
 }
 
 /*
 Determines if the player will collide with something at their current
-velocity.  If so, will return a new vector to apply instead that will
-prevent collisions.
+velocity. If so, will adjust character velocity that will prevent collisions.
 */
-function CollisionCheck(deltaTime : float) : Vector2 {
-	var playerVelocity : Vector2 = _player.GetVelocity();
-	var origin : Vector3 = _player.rigidbody.position;
-	var direction : Vector3 = Vector3(playerVelocity.x, 0, 0).normalized;
+function CollisionCheck(deltaTime : float) {
+	var origin : Vector3 = _character.rigidbody.position;
+	var direction : Vector3 = Vector3(_velocity.x, 0, 0).normalized;
 	var distance : float;
 	var absoluteDistance : float;
 	var hitInfo : RaycastHit;
 	
 	// horizontal rays
-	if (playerVelocity.x != 0) {	// if we're not moving horizontally, then don't cast any rays
+	if (_velocity.x != 0) {	// if we're not moving horizontally, then don't cast any rays
 		var rayOffsetY = Vector3(0, _colliderBoundsOffsetY - _skinThickness, 0);
-		distance = playerVelocity.x * deltaTime;
+		distance = _velocity.x * deltaTime;
 		absoluteDistance = Mathf.Abs(distance) + _colliderBoundsOffsetX + _skinThickness;
 		
 		if (Physics.Raycast(origin + rayOffsetY, direction, hitInfo, absoluteDistance) ||
 			Physics.Raycast(origin - rayOffsetY, direction, hitInfo, absoluteDistance) ||
 			Physics.Raycast(origin, direction, hitInfo, absoluteDistance)) {
 			// adjust horizontal velocity to prevent collision
-			playerVelocity.x = 0;
+			_velocity.x = 0;
 	
 			if (direction == Vector3.right) {
 				_sprite.position.x += hitInfo.distance - _colliderBoundsOffsetX;
@@ -100,15 +109,15 @@ function CollisionCheck(deltaTime : float) : Vector2 {
 	var rayOffsetX = Vector3(_colliderBoundsOffsetX - _skinThickness, 0, 0);
 	
 	// if the player is not currently traveling in the y direction, always be checking to see if we're on the ground
-	direction = (playerVelocity.y == 0) ? -Vector3.up : Vector3(0, playerVelocity.y, 0).normalized;
-	distance = playerVelocity.y * deltaTime;
+	direction = (_velocity.y == 0) ? -Vector3.up : Vector3(0, _velocity.y, 0).normalized;
+	distance = _velocity.y * deltaTime;
 	absoluteDistance = Mathf.Abs(distance) + _colliderBoundsOffsetY + _skinThickness;
 	
 	if (Physics.Raycast(origin + rayOffsetX, direction, hitInfo, absoluteDistance) ||
 		Physics.Raycast(origin - rayOffsetX, direction, hitInfo, absoluteDistance) ||
 		Physics.Raycast(origin, direction, hitInfo, absoluteDistance)) {
 		// adjust vertical velocity to prevent collision
-		playerVelocity.y = 0;
+		_velocity.y = 0;
 
 		if (direction == Vector3.up) {
 			// bumped our head
@@ -118,18 +127,77 @@ function CollisionCheck(deltaTime : float) : Vector2 {
 			hitInfo.collider.SendMessage("OnEventBottomHit");
 		} else {
 			// hit the gound
-			_player.OnEventLand();
+			OnEventLand();
 			_sprite.position.y -= hitInfo.distance - _colliderBoundsOffsetY;
 		}
 	} else {
-		_player.isGrounded = false;
+		isGrounded = false;
 	}
-	
-	return playerVelocity;
+}
+
+/*
+Calculate new player velocities based on gravity.
+Called at a fixed interval independent of framerate.
+*/
+function ApplyGravity() {
+	var y : float = SceneController.GRAVITY * Time.deltaTime;
+	if (isGrounded) {
+		y = 0.0;
+	}
+
+	AddVelocity(Vector2(0.0, y));
+}
+
+function SetWalkSpeed(speed : int) {
+	_walkSpeed = speed;
+}
+
+function SetJumpSpeed(speed : int) {
+	_jumpSpeed = speed;
+}
+
+function SetHorizontal(horizontal : float) {
+	_horizontal = horizontal;
+}
+
+function IsWalking() : boolean {
+	return _isWalking;
+}
+
+function IsMoving() : boolean {
+	return _velocity.sqrMagnitude != 0;
+}
+
+function AddVelocity(v : Vector2) {
+	_velocity.x += v.x;
+	_velocity.y += v.y;
+}
+
+function SetVelocity(v : Vector2) {
+	_velocity = v;
 }
 
 // Come to a complete stop.
 function StopMoving() {
 	_horizontal = 0;
-	_player.SetVelocity(Vector2(0, 0));
+	_velocity = Vector2.zero;
+}
+
+function IsJumping() : boolean {
+	return _isJumping;
+}
+
+function OnEventJump() {
+	// we can only jump if we're not already jumping or falling
+	// or if we have *just* walked off a ledge
+	if (!_isJumping && Mathf.Abs(_velocity.y) <= 50) {
+		_isJumping = true;
+		// the controller will stop us when appropriate
+		_velocity.y += _jumpSpeed;
+	}
+}
+
+function OnEventLand() {
+	isGrounded = true;
+	_isJumping = false;
 }

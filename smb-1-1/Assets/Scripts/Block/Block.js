@@ -26,7 +26,7 @@ function OnEventBottomHit() {
 	}
 }
 
-function GetStartingPosition() {
+function StartingPosition() {
 	return _startingPosition;
 }
 

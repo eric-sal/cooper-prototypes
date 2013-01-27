@@ -1,13 +1,13 @@
 #pragma strict
 
 private var _playerInputDisabled : boolean = false;
-private var _player : Player;
+private var _character : Character;
 private var _characterController : CharacterController2D;
 private var _sprite : OTAnimatingSprite;
 
 // called once in the lifetime of the script
 function Awake() {
-	_player = GetComponent(Player);
+	_character = GetComponent(Character);
 	_characterController = GetComponent(CharacterController2D);
 }
 
@@ -28,7 +28,7 @@ function Update() {
 	
 		if (Input.GetButtonDown("Jump")) {
 			// this will do nothing if the player is already jumping
-			_player.OnEventJump();
+			_characterController.OnEventJump();
 		}
 	}
 }
@@ -41,7 +41,7 @@ function LevelComplete() {
 	_sprite.ShowFrame(3);
 	_sprite.position.x += 4;	// for a better snap to the pole
 	_playerInputDisabled = true;
-	_player.SetVelocity(Vector2(0, 0));
+	_characterController.SetVelocity(Vector2.zero);
 	iTween.MoveTo(gameObject, { 'y': -80, 'easetype': 'linear', 'speed': 150, 'oncomplete': 'WalkRight' });
 }
 
