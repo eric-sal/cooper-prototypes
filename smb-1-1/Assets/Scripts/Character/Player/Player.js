@@ -4,9 +4,6 @@ private var _character : Character;
 private var _sprite : OTAnimatingSprite;
 private var _startingPosition : Vector2;	// this is the location where the player respawns
 
-public var walkSpeed : float = 150;
-public var jumpSpeed : float = 300;
-
 public var score : int = 0;
 public var lives : int = 3;
 public var coins : int = 0;
@@ -19,10 +16,10 @@ function Start() {
 
 	_character = GetComponent(Character);
 	_character.FaceRight();
-	
-	var characterController : CharacterController2D = GetComponent(CharacterController2D);
-	characterController.SetWalkSpeed(walkSpeed);
-	characterController.SetJumpSpeed(jumpSpeed);
+}
+
+function AddPoints(points : int) {
+	score += points;
 }
 
 function OnEnterBottomBounds() {

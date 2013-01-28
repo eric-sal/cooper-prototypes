@@ -10,14 +10,19 @@ function Start() {
 	_block = GetComponent(Block);
 }
 
-function OnEventBottomHit() {
-	if (!_block.disabled) {
-		var coin : CoinFromBlock = Instantiate(Resources.Load('loot/CoinFromBlock', CoinFromBlock));
-		coin.SetPosition(_block.StartingPosition());
-		
-		_numberSpawned += 1;
-		if (_numberSpawned == numberAvailable) {
-			SendMessage('Disable');
+// Called when something else runs into this object
+function OnEventHit(args : Hashtable) {
+	var normal : Vector3 = args['normal'];
+
+	if (normal == -Vector3.up) {	// the bottom of this object got hit
+		if (!_block.disabled) {
+			var coin : CoinFromBlock = Instantiate(Resources.Load('loot/CoinFromBlock', CoinFromBlock));
+			coin.SetPosition(_block.StartingPosition());
+			
+			_numberSpawned += 1;
+			if (_numberSpawned == numberAvailable) {
+				SendMessage('Disable');
+			}
 		}
 	}
 }

@@ -1,20 +1,27 @@
 #pragma strict
 
+public var walkSpeed : float = 150;
+public var jumpSpeed : float = 300;
+
 private var _playerInputDisabled : boolean = false;
 private var _character : Character;
 private var _characterController : CharacterController2D;
+private var _player : Player;
 private var _sprite : OTAnimatingSprite;
 
 // called once in the lifetime of the script
 function Awake() {
 	_character = GetComponent(Character);
 	_characterController = GetComponent(CharacterController2D);
+	
+	_player = GetComponent(Player);
 }
 
 // Use this for initialization
 function Start() {
-	// This doesn't work if it's in Awake()?
 	_sprite = GetComponent(OTAnimatingSprite);
+	_characterController.SetWalkSpeed(walkSpeed);
+	_characterController.SetJumpSpeed(jumpSpeed);
 }
 
 /*
@@ -26,11 +33,32 @@ function Update() {
 		// Get the user input
 		_characterController.SetHorizontal(Input.GetAxis("Horizontal")); // -1.0 to 1.0
 	
-		if (Input.GetButtonDown("Jump")) {
-			// this will do nothing if the player is already jumping
-			_characterController.OnEventJump();
+		// this will do nothing if the player is already jumping
+		if (!_characterController.IsJumping() && Input.GetButtonDown("Jump")) {
+			_characterController.OnEventJump(1);
 		}
 	}
+}
+
+// Called when this object collides with something
+function OnEventCollision(args : Hashtable) {
+	var otherCollider : Collider = args['collider'];
+	var normal : Vector3 = args['normal'];
+
+	if (normal == Vector3.up) {	// if we hit the top of something...
+		var goomba : Goomba = otherCollider.GetComponent(Goomba);
+		if (goomba) {	// ...and it was a Goomba (should create Enemy script change to Enemy)
+			// give the player points
+			_player.AddPoints(goomba.GetPointValue());
+
+			// bounce him off of the enemy
+			_characterController.OnEventJump(0.5);
+		}
+	}
+}
+
+// Called when something else runs into this object
+function OnEventHit(args : Hashtable) {
 }
 
 // I'm not sure the PlayerController script is the best place for this, but since

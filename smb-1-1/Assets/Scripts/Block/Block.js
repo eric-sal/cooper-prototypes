@@ -12,16 +12,17 @@ function Start() {
 	_startingPosition = _sprite.position;
 }
 
-// Considered using the Orthello 2d OnCollision callback, but we can't tell what side of the 
-// object was struck - whether it was the top or bottom. And I couldn't get the Unity 3d
-// OnCollisionEnter callback to fire. Decided on using Component.SendMessage to send the message
-// from the PlayerController to whichever object it hit.
-function OnEventBottomHit() {
-	if (!disabled) {
-		if (springiness > 0) {
-			var currentPosition : Vector3 = _sprite.position;
-			var apex : Vector3 = currentPosition + (Vector3.up * springiness);
-			iTween.MoveTo(gameObject, { 'path': [apex, currentPosition], 'easetype': 'linear', 'time': 0.15 });
+// Called when something else runs into this object
+function OnEventHit(args : Hashtable) {
+	var normal : Vector3 = args['normal'];
+
+	if (normal == -Vector3.up) {	// the bottom of this object got hit
+		if (!disabled) {
+			if (springiness > 0) {
+				var currentPosition : Vector3 = _sprite.position;
+				var apex : Vector3 = currentPosition + (Vector3.up * springiness);
+				iTween.MoveTo(gameObject, { 'path': [apex, currentPosition], 'easetype': 'linear', 'time': 0.15 });
+			}
 		}
 	}
 }

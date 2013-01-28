@@ -23,19 +23,21 @@ function Awake() {
 	_character = GetComponent(Character);
 	_colliderBoundsOffsetX = collider.bounds.extents.x;
 	_colliderBoundsOffsetY = collider.bounds.extents.y;
-}
-
-// Use this for initialization
-function Start() {
+	
 	// set these during initialization to ensure that the values are
 	// properly set when a character is instantiated.
-	_sprite = GetComponent(OTAnimatingSprite);
 	_velocity = Vector2.zero;
 	_lastVelocity = _velocity;
 	_horizontal = 0;
 	_isWalking = false;
 	_isJumping = false;
 	isGrounded = false;
+
+}
+
+// Use this for initialization
+function Start() {
+	_sprite = GetComponent(OTAnimatingSprite);
 }
 
 /*
@@ -99,6 +101,9 @@ function CollisionCheck(deltaTime : float) {
 			} else {
 				_sprite.position.x -= hitInfo.distance - _colliderBoundsOffsetX;
 			}
+			
+			SendMessage('OnEventCollision', { 'collider': hitInfo.collider, 'normal': hitInfo.normal }, SendMessageOptions.DontRequireReceiver);	// Let this GameObject know we hit something
+			hitInfo.collider.SendMessage("OnEventHit", { 'collider': collider, 'normal': hitInfo.normal }, SendMessageOptions.DontRequireReceiver);	// let the object we hit know that we hit the bottom of it
 		} else {
 			// we didn't have a horizontal collision, so offset the vertical rays by the amount the player moved
 			origin.x += distance;
@@ -122,14 +127,14 @@ function CollisionCheck(deltaTime : float) {
 		if (direction == Vector3.up) {
 			// bumped our head
 			_sprite.position.y += hitInfo.distance - _colliderBoundsOffsetY;
-			
-			// let the object we hit know that we hit the bottom of it
-			hitInfo.collider.SendMessage("OnEventBottomHit");
 		} else {
 			// hit the gound
 			OnEventLand();
 			_sprite.position.y -= hitInfo.distance - _colliderBoundsOffsetY;
 		}
+		
+		SendMessage('OnEventCollision', { 'collider': hitInfo.collider, 'normal': hitInfo.normal }, SendMessageOptions.DontRequireReceiver);	// Let this GameObject know we hit something
+		hitInfo.collider.SendMessage("OnEventHit", { 'collider': collider, 'normal': hitInfo.normal }, SendMessageOptions.DontRequireReceiver);	// let the object we hit know that we hit the bottom of it
 	} else {
 		isGrounded = false;
 	}
@@ -187,13 +192,13 @@ function IsJumping() : boolean {
 	return _isJumping;
 }
 
-function OnEventJump() {
+function OnEventJump(multiplier : float) {
 	// we can only jump if we're not already jumping or falling
 	// or if we have *just* walked off a ledge
-	if (!_isJumping && Mathf.Abs(_velocity.y) <= 50) {
+	if (Mathf.Abs(_velocity.y) <= 30) {
 		_isJumping = true;
 		// the controller will stop us when appropriate
-		_velocity.y += _jumpSpeed;
+		_velocity.y += _jumpSpeed * multiplier;
 	}
 }
 
