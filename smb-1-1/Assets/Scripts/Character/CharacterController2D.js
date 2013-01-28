@@ -21,8 +21,8 @@ var isGrounded : boolean;
 // called once in the lifetime of the script
 function Awake() {
 	_character = GetComponent(Character);
-	_colliderBoundsOffsetX = _character.rigidbody.collider.bounds.extents.x;
-	_colliderBoundsOffsetY = _character.rigidbody.collider.bounds.extents.y;
+	_colliderBoundsOffsetX = collider.bounds.extents.x;
+	_colliderBoundsOffsetY = collider.bounds.extents.y;
 }
 
 // Use this for initialization
@@ -76,7 +76,7 @@ Determines if the player will collide with something at their current
 velocity. If so, will adjust character velocity that will prevent collisions.
 */
 function CollisionCheck(deltaTime : float) {
-	var origin : Vector3 = _character.rigidbody.position;
+	var origin : Vector3 = collider.bounds.center;
 	var direction : Vector3 = Vector3(_velocity.x, 0, 0).normalized;
 	var distance : float;
 	var absoluteDistance : float;
