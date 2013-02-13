@@ -22,9 +22,13 @@ function AddPoints(points : int) {
 	score += points;
 }
 
-function OnEnterBottomBounds() {
+function Kill() {
 	lives -= 1;
 	_character.SetIsDead(true);
+}
+
+function OnEnterBottomBounds() {
+	Kill();
 }
 
 function Respawn() {

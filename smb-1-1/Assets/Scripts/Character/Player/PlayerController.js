@@ -43,22 +43,21 @@ function Update() {
 // Called when this object collides with something
 function OnEventCollision(args : Hashtable) {
 	var otherCollider : Collider = args['collider'];
+	var goomba : Goomba = otherCollider.GetComponent(Goomba);
 	var normal : Vector3 = args['normal'];
 
 	if (normal == Vector3.up) {	// if we hit the top of something...
-		var goomba : Goomba = otherCollider.GetComponent(Goomba);
 		if (goomba) {	// ...and it was a Goomba (should create Enemy script change to Enemy)
 			// give the player points
 			_player.AddPoints(goomba.GetPointValue());
+
+			// kill the goomba
+			goomba.Kill();
 
 			// bounce him off of the enemy
 			_characterController.OnEventJump(0.5);
 		}
 	}
-}
-
-// Called when something else runs into this object
-function OnEventHit(args : Hashtable) {
 }
 
 // I'm not sure the PlayerController script is the best place for this, but since

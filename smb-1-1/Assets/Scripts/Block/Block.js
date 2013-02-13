@@ -12,11 +12,12 @@ function Start() {
 	_startingPosition = _sprite.position;
 }
 
-// Called when something else runs into this object
-function OnEventHit(args : Hashtable) {
+function OnEventCollision(args : Hashtable) {
+	var otherCollider : Collider = args['collider'];
+	var player : Player = otherCollider.GetComponent(Player);
 	var normal : Vector3 = args['normal'];
 
-	if (normal == -Vector3.up) {	// the bottom of this object got hit
+	if (normal == -Vector3.up && player) {	// the bottom of this object got hit
 		if (!disabled) {
 			if (springiness > 0) {
 				var currentPosition : Vector3 = _sprite.position;

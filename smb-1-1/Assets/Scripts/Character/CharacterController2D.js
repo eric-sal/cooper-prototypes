@@ -103,7 +103,7 @@ function CollisionCheck(deltaTime : float) {
 			}
 			
 			SendMessage('OnEventCollision', { 'collider': hitInfo.collider, 'normal': hitInfo.normal }, SendMessageOptions.DontRequireReceiver);	// Let this GameObject know we hit something
-			hitInfo.collider.SendMessage("OnEventHit", { 'collider': collider, 'normal': hitInfo.normal }, SendMessageOptions.DontRequireReceiver);	// let the object we hit know that we hit the bottom of it
+			hitInfo.collider.SendMessage("OnEventCollision", { 'collider': collider, 'normal': hitInfo.normal }, SendMessageOptions.DontRequireReceiver);	// let the object we hit know that it got hit
 		} else {
 			// we didn't have a horizontal collision, so offset the vertical rays by the amount the player moved
 			origin.x += distance;
@@ -132,9 +132,9 @@ function CollisionCheck(deltaTime : float) {
 			OnEventLand();
 			_sprite.position.y -= hitInfo.distance - _colliderBoundsOffsetY;
 		}
-		
+
 		SendMessage('OnEventCollision', { 'collider': hitInfo.collider, 'normal': hitInfo.normal }, SendMessageOptions.DontRequireReceiver);	// Let this GameObject know we hit something
-		hitInfo.collider.SendMessage("OnEventHit", { 'collider': collider, 'normal': hitInfo.normal }, SendMessageOptions.DontRequireReceiver);	// let the object we hit know that we hit the bottom of it
+		hitInfo.collider.SendMessage("OnEventCollision", { 'collider': collider, 'normal': hitInfo.normal }, SendMessageOptions.DontRequireReceiver);	// let the object we hit know that it got hit
 	} else {
 		isGrounded = false;
 	}
@@ -159,6 +159,10 @@ function SetWalkSpeed(speed : int) {
 
 function SetJumpSpeed(speed : int) {
 	_jumpSpeed = speed;
+}
+
+function GetHorizontal() : float {
+	return _horizontal;
 }
 
 function SetHorizontal(horizontal : float) {

@@ -1,7 +1,8 @@
 #pragma strict
 
-public function OnEventHit(args : Hashtable) {
+function OnEventCollision(args : Hashtable) {
 	var otherCollider : Collider = args['collider'];
+
 	var flag : GameObject = GameObject.Find('Flag');
 	iTween.MoveTo(flag, { 'y': -80, 'easetype': 'linear', 'speed': 150 });
 	

@@ -20,32 +20,16 @@ function Start() {
 
 // Called when this object collides with something
 function OnEventCollision(args : Hashtable) {
+	var otherCollider : Collider = args['collider'];
+	var player : Player = otherCollider.GetComponent(Player);
 	var normal : Vector3 = args['normal'];
 
 	if (Mathf.Abs(normal.x) > 0) {
-		// when the Goomba collides with something, send it back in the opposite direction
-		_characterController.SetHorizontal(normal.x);
-	}
-}
-
-// Called when something else runs into this object
-function OnEventHit(args : Hashtable) {
-	var otherCollider : Collider = args['collider'];
-	var normal : Vector3 = args['normal'];
-	
-	if (normal == Vector3.up) {	// if something hit the top of this...
-		var player : Player = otherCollider.GetComponent(Player);
-		if (player) {	// ...and it was the player
-			// stop and squash the goomba
-			_characterController.StopMoving();
-			_sprite.Stop();
-			_sprite.ShowFrame(0);
-			
-			// disable the collider so that nothing else can run into it
-			collider.enabled = false;
-			
-			// destroy gameobject after 1 second
-			Destroy(gameObject, 1);
+		if (player) {
+			player.Kill();
+		} else if (!player && normal.x != _characterController.GetHorizontal()) {
+			// when the Goomba collides with something, send it back in the opposite direction
+			_characterController.SetHorizontal(normal.x);
 		}
 	}
 }
