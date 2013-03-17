@@ -1,0 +1,12 @@
+;=@:MarioSprite
+;=T:Ground
+;=?:QuestionBlock
+;==:Brick
+;s16
+;+
+
+          ?
+
+    ?   =?=?=
+ @
+TTTTTTTTTTTTT

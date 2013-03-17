@@ -27,7 +27,6 @@ public class Sprite : MonoBehaviour
 	private Mesh _mesh;						// mesh object created by script, and added to MeshFilter
 	private bool _meshChanged = false;
 
-	// Use this for initialization
 	void Start ()
 	{
 		// add a MeshFilter object if it doesn't exist
