@@ -1,12 +1,18 @@
+;n=LevelContainer
+;s=16
 ;=@:MarioSprite
 ;=T:Ground
 ;=?:QuestionBlock
 ;==:Brick
-;s16
 ;+
 
-          ?
+                      ?                                                         ========   ===?              ?           ===    =??=
 
-    ?   =?=?=
- @
-TTTTTTTTTTTTT
+
+
+                ?   =?=?=                                                    =?=              ?    ==     ?  ?  ?     =          ==                                     ==?=
+
+
+   @
+TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT  TTTTTTTTTTTTTTT   TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT  TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
+TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT  TTTTTTTTTTTTTTT   TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT  TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT

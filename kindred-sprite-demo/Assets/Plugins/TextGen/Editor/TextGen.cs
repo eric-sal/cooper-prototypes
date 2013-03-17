@@ -7,23 +7,24 @@ using System.Text.RegularExpressions;
 public class TextGen : EditorWindow
 {
 	public Object file = null;
+	public bool deleteAfterImport = false;
 
-	// Add menu item named "My Window" to the Window menu
-	[MenuItem("File/Import TextGen File...")]
-	public static void ImportTextGenFile ()
+	[MenuItem("GameObject/Import From TextGen File...", false, 9999)]
+	public static void ImportFromTextGenFile ()
 	{
-		//Show existing window instance. If one doesn't exist, make one.
 		EditorWindow.GetWindow (typeof(TextGen));
 	}
 
 	public void OnGUI ()
 	{
-		GUILayout.Label ("Base Settings", EditorStyles.boldLabel);
+		GUILayout.Label ("Import a Text Gen File", EditorStyles.boldLabel);
 		file = EditorGUILayout.ObjectField ("Text Gen File", file, typeof(Object));
-		GUILayout.BeginArea (new Rect (240, 50, 100, 100));
+		EditorGUIUtility.LookLikeControls (283.0f);
+		deleteAfterImport = EditorGUILayout.Toggle ("Delete template instances after import?", deleteAfterImport);
+		
+		GUILayout.BeginArea (new Rect (240, 65, 100, 100));
 		if (GUILayout.Button ("Import!", GUILayout.Width (60))) {
 			DoImport ();
-			file = null;
 			this.Close ();
 		}
 		GUILayout.EndArea ();
@@ -32,54 +33,113 @@ public class TextGen : EditorWindow
 	public void DoImport ()
 	{
 		if (file != null) {
-			TextAsset textGenFile = (TextAsset)file;
-			string keyLine = null;
-			bool recording = false;
-			int scale = 1;
-			Object[] sprites = FindObjectsOfType (typeof(Sprite));
-			Hashtable gameObjects = new Hashtable ();
-			List<string> map = new List<string> ();
+			// Let's find our template objects in the hierarchy
+			Object[] allSprites = FindObjectsOfType (typeof(Sprite));
+			Hashtable templateSprites = new Hashtable ();	// Hashtable of our found Sprite GameObject templates
+			Hashtable templateParents = new Hashtable ();	// Empty GameObjects to act as parents for new instances
+			foreach (Object sprite in allSprites) {
+				if (((Sprite)sprite).gameObject.tag == "TextGenTemplate") {
+					string spriteName = ((Sprite)sprite).name;
+					GameObject container = new GameObject (spriteName + "Container");
+					templateSprites.Add (spriteName, sprite);
+					templateParents.Add (spriteName, container);
+				}
+			}
+			
+			TextAsset textGenFile = (TextAsset)file;	// Our file is actually a text file
+			bool recording = false;						// We've hit the map start config option
+			GameObject parentContainer = null;			// If specified, add all instances to this parent
+			int scale = 1;								// Grid size
+			int globalDepth = 0;						// Depth at which to add the parent (or each individual instance)
+			List<string> map = new List<string> ();		// Array of lines representing our map
+			Hashtable keyReference = new Hashtable ();	// Hash of key references ex: {"@" => "MarioSprite", "T" => "Ground", ... }
+			
 			string[] result = Regex.Split (textGenFile.text, "\r?\n");
 			foreach (string line in result) {
-				if (line.StartsWith (";=")) {
-					keyLine = Regex.Replace (line, ";=", "");
-					string[] keyValue = keyLine.Split (':');
-					foreach (Object sprite in sprites) {
-						if (sprite.name == keyValue [1]) {
-							gameObjects.Add (keyValue [0], sprite);
+				if (line.StartsWith (";=")) {	// Key reference line
+					string[] keyPair = line.Replace (";=", "").Split (':');
+					string[] values = Regex.Split (keyPair [1], @",\s*");
+					string spriteName = values [0];
+					GameObject templateParent = (GameObject)templateParents [spriteName];
+					
+					keyReference.Add (keyPair [0], spriteName);
+					foreach (string attributeValue in values) {
+						if (attributeValue.StartsWith ("z=")) {	// instance container z-depth
+							int depth = int.Parse (attributeValue.Replace ("z=", ""));
+							templateParent.transform.position = new Vector3 (0, 0, depth);
+						}
+						if (attributeValue.StartsWith ("n=")) {	// instance container name
+							templateParent.name = attributeValue.Replace ("n=", "");
 						}
 					}
-				} else if (line.StartsWith (";s")) {
-					scale = int.Parse (Regex.Replace (line, ";s", ""));
-				} else if (line.StartsWith (";+")) {
+				} else if (line.StartsWith (";s=")) {	// Scale
+					scale = int.Parse (line.Replace (";s=", ""));
+				} else if (line.StartsWith (";n=")) {	// parent container
+					parentContainer = new GameObject (line.Replace (";n=", ""));
+				} else if (line.StartsWith (";z=")) {	// global z-depth
+					globalDepth = int.Parse (line.Replace (";z=", ""));
+				} else if (line.StartsWith (";+")) {	// Start of map definition
 					recording = true;
-				} else if (recording && !line.StartsWith (";")) {
+				} else if (recording && !line.StartsWith (";")) {	// Map definition lines
 					map.Add (line);
 				}
 			}
 			
-			map.Reverse ();
+			map.Reverse ();	// Start from the bottom and work our way up
 			for (var y = 0; y < map.Count; y++) {
 				string line = map [y];
 				
 				for (var x = 0; x < line.Length; x++) {
 					string key = line [x].ToString ();
 					if (key != " ") {
-						Sprite sprite = (Sprite)gameObjects [key];
+						Sprite sprite = (Sprite)templateSprites [keyReference [key]];	// The template sprite we want to dupe
+						
+						// We want to use InstantiatePrefab because we want to maintain the link to the
+						// prefab object when we add it to the hierarchy. Instantiate creates a clone of
+						// a GameObject and breaks the connection to the prefab.
 						Object prefabRoot = PrefabUtility.GetPrefabParent (sprite.gameObject);
 						Object dupe = PrefabUtility.InstantiatePrefab (prefabRoot);
+						
+						// Make our dupe look like our template
 						dupe.name = sprite.gameObject.name;
 						Sprite dupeSprite = ((GameObject)dupe).GetComponent<Sprite> ();
 						dupeSprite.spriteContainer = sprite.spriteContainer;
 						dupeSprite.frameIndex = sprite.frameIndex;
-						((GameObject)dupe).transform.position = new Vector3 (x * scale, y * scale, 0);
+						
+						if (parentContainer != null) {
+							((GameObject)dupe).transform.parent = parentContainer.transform;
+						}
+						
+						// Add our instance to its parent GameObject
+						((GameObject)dupe).transform.parent = ((GameObject)templateParents [keyReference [key]]).transform;
+						
+						// Set the new instance's position
+						((GameObject)dupe).transform.localPosition = new Vector3 (x * scale, y * scale, 0);
 					}
 				}
 			}
 			
-			// Destroy the source instances
-			foreach (DictionaryEntry pair in gameObjects) {
-				DestroyImmediate (((Sprite)pair.Value).gameObject);
+			
+			// Make necessary adjustments to our instance containers
+			foreach (DictionaryEntry pair in templateParents) {
+				GameObject templateParent = (GameObject)pair.Value;
+				if (parentContainer != null) {
+					// If the global parent exists, add our instance containers to it
+					templateParent.transform.parent = parentContainer.transform;
+				}
+				
+				// Set the instance container depth to the globalDepth if the instance container's
+				// depth wasn't specified.
+				if (templateParent.transform.position.z == 0) {
+					templateParent.transform.localPosition = new Vector3 (0, 0, globalDepth);
+				}
+			}
+			
+			if (deleteAfterImport) {
+				// Destroy the template instances
+				foreach (DictionaryEntry pair in templateSprites) {
+					DestroyImmediate (((Sprite)pair.Value).gameObject);
+				}
 			}
 		}
 	}
