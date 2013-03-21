@@ -27,6 +27,16 @@ public class Sprite : MonoBehaviour
 	private MeshFilter _meshFilter;			// MeshFilter component added to GameObject by script
 	private Mesh _mesh;						// mesh object created by script, and added to MeshFilter
 	private bool _meshChanged = false;
+	
+	public Vector2 position {
+		get {
+			return new Vector2 (_transform.position.x, _transform.position.y);
+		}
+		
+		set {
+			_transform.position = new Vector3 (value.x, value.y, _transform.position.z);
+		}
+	}
 
 	void Awake ()
 	{
