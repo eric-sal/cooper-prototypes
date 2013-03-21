@@ -8,6 +8,7 @@ private var _character : Character;
 private var _characterController : CharacterController2D;
 private var _player : Player;
 private var _sprite : Sprite;
+private var _transform : Transform;
 
 // called once in the lifetime of the script
 function Awake() {
@@ -22,6 +23,7 @@ function Start() {
 	_sprite = GetComponent(Sprite);
 	_characterController.SetWalkSpeed(walkSpeed);
 	_characterController.SetJumpSpeed(jumpSpeed);
+	_transform = transform;
 }
 
 /*
@@ -67,7 +69,7 @@ function OnEventCollision(args : Hashtable) {
 function LevelComplete() {
 	// Disable player movement, slide them down the pole, and move them to the castle.
 	_sprite.ShowFrame(3);
-	transform.position.x += 4;	// for a better snap to the pole
+	_transform.position.x += 4;	// for a better snap to the pole
 	_playerInputDisabled = true;
 	_characterController.SetVelocity(Vector2.zero);
 	//iTween.MoveTo(gameObject, { 'y': -80, 'easetype': 'linear', 'speed': 150, 'oncomplete': 'WalkRight' });

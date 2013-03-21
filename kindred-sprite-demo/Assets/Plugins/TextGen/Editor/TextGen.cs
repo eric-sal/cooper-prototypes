@@ -1,5 +1,5 @@
-using UnityEditor;
 using UnityEngine;
+using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -44,6 +44,10 @@ public class TextGen : EditorWindow
 					templateSprites.Add (spriteName, sprite);
 					templateParents.Add (spriteName, container);
 				}
+			}
+			
+			if (templateSprites.Count == 0) {
+				throw new System.Exception ("No Sprite templates found. Be sure to tag templates with 'TextGenTemplate'.");
 			}
 			
 			TextAsset textGenFile = (TextAsset)file;	// Our file is actually a text file
@@ -93,7 +97,7 @@ public class TextGen : EditorWindow
 					string key = line [x].ToString ();
 					if (key != " ") {
 						Sprite sprite = (Sprite)templateSprites [keyReference [key]];	// The template sprite we want to dupe
-						
+
 						// We want to use InstantiatePrefab because we want to maintain the link to the
 						// prefab object when we add it to the hierarchy. Instantiate creates a clone of
 						// a GameObject and breaks the connection to the prefab.

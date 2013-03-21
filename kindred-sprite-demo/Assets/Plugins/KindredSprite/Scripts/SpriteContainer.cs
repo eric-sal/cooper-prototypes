@@ -4,45 +4,21 @@ using System.Collections.Generic;
 using System.Xml;
 using XmlExtensions;
 
-// We want to see the changes to the SpriteContainer while developing
 [ExecuteInEditMode]
 
 // Import sprite sheet and atlas data
-public class SpriteContainer : MonoBehaviour
+public class SpriteContainer : ScriptableObject
 {
 	public Texture texture;
-	public AtlasData[] atlasData = null;
-	public int borderPadding = 0; 				// padding around edges of sprite sheet image in pixels
+	public SpriteData[] spriteData;
 	public TextAsset atlasDataFile = null;
 	private TextAsset _atlasDataFile = null;
 	public bool reloadData = false;
-
+	
 	private int _atlasDataFileSize = 0;
 	private Material _material;
-	private MeshRenderer _renderer;
-	
 	private XmlNode _subTexture = null;
 	
-	/*
-	public MeshRenderer renderer {
-		get {
-			if (_renderer == null) {
-				_renderer = new MeshRenderer ();
-			}
-			
-			if (_renderer.material == null) {
-				_renderer.material = new Material (Shader.Find ("Particles/Alpha Blended"));
-			}
-			
-			if (texture != null) {
-				_material.mainTexture = texture;
-			}
-			
-			return _renderer;
-		}
-	}
-	*/
-
 	public Material material {
 		get {
 			if (_material == null) {
@@ -56,43 +32,33 @@ public class SpriteContainer : MonoBehaviour
 			return _material;
 		}
 	}
-	
-	public void Awake ()
-	{
-		if (atlasDataFile != null) {
-			ImportAtlasData ();
-			
-			_atlasDataFileSize = atlasDataFile.bytes.Length;
-		}
-		
-		_atlasDataFile = atlasDataFile;
-	}
 
 	public void Update ()
 	{
-		if (atlasDataFile == null || texture == null) {
-			Reset ();
-		}
-		
-		// Only reload the data file if it's changed, or we're forcing a reload.
-		// We'll assume the data file has changed if the file is different from the cached file,
-		// or if the filesize of the atlas data file has changed.
-		if (reloadData || _atlasDataFile != atlasDataFile || (atlasDataFile != null && _atlasDataFileSize != atlasDataFile.bytes.Length)) {
-			if (atlasDataFile != null) {
-				ImportAtlasData ();
-				reloadData = false;
-				
-				_atlasDataFileSize = atlasDataFile.bytes.Length;
+		if (!Application.isPlaying) {
+			if (atlasDataFile == null || texture == null) {
+				Reset ();
 			}
 			
-			_atlasDataFile = atlasDataFile;
+			// Only reload the data file if it's changed, or we're forcing a reload.
+			// We'll assume the data file has changed if the file is different from the cached file,
+			// or if the filesize of the atlas data file has changed.
+			if (reloadData || _atlasDataFile != atlasDataFile || (atlasDataFile != null && _atlasDataFileSize != atlasDataFile.bytes.Length)) {
+				if (atlasDataFile != null) {
+					ImportAtlasData ();
+					reloadData = false;
+					
+					_atlasDataFileSize = atlasDataFile.bytes.Length;
+				}
+				
+				_atlasDataFile = atlasDataFile;
+			}
 		}
 	}
 	
-	private void Reset ()
+	public void Reset ()
 	{
 		if (atlasDataFile == null) {
-			atlasData = null;
 			_atlasDataFile = null;
 			_atlasDataFileSize = 0;
 		}
@@ -138,6 +104,18 @@ public class SpriteContainer : MonoBehaviour
 			}
 		}
 		
-		atlasData = data.ToArray ();
+		spriteData = new SpriteData[data.Count];
+		SpriteData sprite = null;
+		for (int i = 0; i < data.Count; i++) {
+			sprite = ScriptableObject.CreateInstance<SpriteData> ();
+			sprite.name = data [i].name;
+			sprite.size = data [i].size;
+			sprite.sheetPixelCoords = data [i].position;
+			sprite.texture = texture;
+			sprite.UpdateVertices ();
+			sprite.UpdateUVs ();
+			
+			spriteData [i] = sprite;
+		}
 	}
 }

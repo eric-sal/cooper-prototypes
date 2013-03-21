@@ -16,6 +16,8 @@ private var _isJumping : boolean;
 private var _walkSpeed : int;
 private var _jumpSpeed : int;
 
+private var _transform : Transform;
+
 var isGrounded : boolean;
 
 // called once in the lifetime of the script
@@ -32,12 +34,12 @@ function Awake() {
 	_isWalking = false;
 	_isJumping = false;
 	isGrounded = false;
-
 }
 
 // Use this for initialization
 function Start() {
 	_sprite = GetComponent(Sprite);
+	_transform = transform;
 }
 
 /*
@@ -67,8 +69,8 @@ function FixedUpdate() {
 	CollisionCheck(dt);
 
 	// move the player
-	transform.position.x += _velocity.x * dt;
-	transform.position.y += _velocity.y * dt;
+	_transform.position.x += _velocity.x * dt;
+	_transform.position.y += _velocity.y * dt;
 	
 	_lastVelocity = _velocity;
 }
@@ -97,9 +99,9 @@ function CollisionCheck(deltaTime : float) {
 			_velocity.x = 0;
 	
 			if (direction == Vector3.right) {
-				transform.position.x += hitInfo.distance - _colliderBoundsOffsetX;
+				_transform.position.x += hitInfo.distance - _colliderBoundsOffsetX;
 			} else {
-				transform.position.x -= hitInfo.distance - _colliderBoundsOffsetX;
+				_transform.position.x -= hitInfo.distance - _colliderBoundsOffsetX;
 			}
 			
 			SendMessage('OnEventCollision', { 'collider': hitInfo.collider, 'normal': hitInfo.normal }, SendMessageOptions.DontRequireReceiver);	// Let this GameObject know we hit something
@@ -126,11 +128,11 @@ function CollisionCheck(deltaTime : float) {
 
 		if (direction == Vector3.up) {
 			// bumped our head
-			transform.position.y += hitInfo.distance - _colliderBoundsOffsetY;
+			_transform.position.y += hitInfo.distance - _colliderBoundsOffsetY;
 		} else {
 			// hit the gound
 			OnEventLand();
-			transform.position.y -= hitInfo.distance - _colliderBoundsOffsetY;
+			_transform.position.y -= hitInfo.distance - _colliderBoundsOffsetY;
 		}
 
 		SendMessage('OnEventCollision', { 'collider': hitInfo.collider, 'normal': hitInfo.normal }, SendMessageOptions.DontRequireReceiver);	// Let this GameObject know we hit something
