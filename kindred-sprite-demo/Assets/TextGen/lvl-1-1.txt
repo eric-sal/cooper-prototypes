@@ -4,15 +4,16 @@
 ;=T:Ground
 ;=?:QuestionBlock
 ;==:Brick
+;=M:SolidBlock
 ;+
 
-                      ?                                                         ========   ===?              ?           ===    =??=
-
-
-
-                ?   =?=?=                                                    =?=              ?    ==     ?  ?  ?     =          ==                                     ==?=
-
-
-   @
+                      ?                                                         ========   ===?              ?           ===    =??=                                                        MM
+                                                                                                                                                                                           MMM
+                                                                                                                                                                                          MMMM
+                                                                                                                                                                                         MMMMM
+                ?   =?=?=                                                    =?=              ?    ==     ?  ?  ?     =          ==      M  M          MM  M            ==?=            MMMMMM
+                                                                                                                                        MM  MM        MMM  MM                          MMMMMMM
+                                                                                                                                       MMM  MMM      MMMM  MMM                        MMMMMMMM
+   @                                                                                                                                  MMMM  MMMM    MMMMM  MMMM                      MMMMMMMMM        M
 TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT  TTTTTTTTTTTTTTT   TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT  TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
 TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT  TTTTTTTTTTTTTTT   TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT  TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
