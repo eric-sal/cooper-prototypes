@@ -23,18 +23,17 @@ public class Sprite : MonoBehaviour
 	public int frameIndex = 0;
 	public float depth = 0;		// z-depth of sprite
 	private float _depth = 0;
-	
 	private Transform _transform = null;
 	private SpriteData[] _spriteData;
 	private MeshFilter _meshFilter;			// MeshFilter component added to GameObject by script
 	private Mesh _mesh;						// mesh object created by script, and added to MeshFilter
 	private bool _meshChanged = false;
-	
+
 	public Vector2 position {
 		get {
 			return new Vector2 (_transform.position.x, _transform.position.y);
 		}
-		
+
 		set {
 			_transform.position = new Vector3 (value.x, value.y, _transform.position.z);
 		}
@@ -45,7 +44,7 @@ public class Sprite : MonoBehaviour
 		_transform = transform;
 		_meshFilter = gameObject.GetComponent<MeshFilter> ();
 		InitMeshAndSpriteData ();
-		
+
 		// The important thing to remember is that Unity automatically batches draw calls if the sprites
 		// are using the same material. I assumed that creating the material on the SpriteContainer and
 		// then pointing all renderer materials to that instance would work. But I think that's why I'm
@@ -75,7 +74,7 @@ public class Sprite : MonoBehaviour
 			} else if (spriteContainer == null) {
 				Reset ();
 			}
-			
+
 			if (spriteContainer != null && depth != _depth) {
 				UpdateDepth ();
 			}
@@ -88,22 +87,22 @@ public class Sprite : MonoBehaviour
 				} else if (frameIndex >= _spriteData.Length) {
 					frameIndex = _spriteData.Length - 1;
 				}
-				
+
 				ShowFrame (frameIndex);
 			}
 		}
-		
+
 		if (_meshChanged) {
 			UpdateMesh ();
 		}
 	}
-	
+
 	public void ShowFrame (int index)
 	{
 		frameIndex = index;
 		_meshChanged = true;
 	}
-	
+
 	// Reset all public vars, and remove any dynamically added game objects.
 	public void Reset ()
 	{
@@ -111,23 +110,23 @@ public class Sprite : MonoBehaviour
 		_spriteContainer = null;
 		frameIndex = 0;
 		_spriteData = null;
-		
+
 		_mesh = null;
 		_meshChanged = false;
-		
+
 		_meshFilter.sharedMesh = null;
 		renderer.sharedMaterial = null;
 	}
-	
+
 	/*** Private ***/
-	
+
 	private void InitMeshAndSpriteData ()
 	{
 		if (spriteContainer != null) {
 			if (_mesh == null) {
 				_mesh = new Mesh ();
 				_mesh.name = spriteContainer.name;
-				
+
 				if (Application.isPlaying) {
 					_meshFilter.mesh = _mesh;
 					renderer.material = spriteContainer.material;
@@ -138,15 +137,16 @@ public class Sprite : MonoBehaviour
 			} else {
 				_mesh = (Application.isPlaying) ? _meshFilter.mesh : _meshFilter.sharedMesh;
 			}
-			
+
 			if (_spriteData == null || _spriteData.Length == 0) {
 				_spriteData = spriteContainer.spriteData;
 			}
 			
+			UpdateDepth ();
 			UpdateMesh ();
 		}
 	}
-	
+
 	// http://docs.unity3d.com/Documentation/ScriptReference/Mesh.html
 	private void UpdateMesh ()
 	{
@@ -159,16 +159,13 @@ public class Sprite : MonoBehaviour
 			_transform.localScale = _spriteData [frameIndex].RecalculateSize ();
 			_mesh.RecalculateBounds ();
 		}
+		
+		_meshChanged = false;
 	}
-	
+
 	private void UpdateDepth ()
 	{
 		spriteContainer.UpdateVertices (depth);
-		
-		_mesh.Clear ();
-		_mesh.vertices = spriteContainer.vertices;
-		_mesh.triangles = spriteContainer.triangles;
-		_mesh.normals = spriteContainer.normals;
-		_mesh.RecalculateBounds ();
+		_meshChanged = true;
 	}
 }
