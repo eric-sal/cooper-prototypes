@@ -4,14 +4,14 @@ public enum Animations { StandRight, SlideRight, WalkRight, JumpRight, StandLeft
 
 private var _character : Character;
 private var _characterController : CharacterController2D;
-private var _sprite : Sprite;
+private var _sprite : AnimatedSprite;
 private var _currentAnimation : Animations;
 
 // Use this for initialization
 function Start() {
 	_character = GetComponent(Character);
 	_characterController = GetComponent(CharacterController2D);
-	_sprite = GetComponent(Sprite);
+	_sprite = GetComponent(AnimatedSprite);
 
 }
 
@@ -37,7 +37,7 @@ function FixedUpdate() {
 				if (_currentAnimation != Animations.WalkRight) {
 					_currentAnimation = Animations.WalkRight;
 					_sprite.ShowFrame(13);
-					//_sprite.Play("WalkRight");
+					_sprite.Play("WalkRight");
 				}
 			} else if (_characterController.IsJumping()) {
 				if (_currentAnimation != Animations.JumpRight) {
@@ -55,8 +55,8 @@ function FixedUpdate() {
 			if (_characterController.IsWalking()) {
 				if (_currentAnimation != Animations.WalkLeft) {
 					_currentAnimation = Animations.WalkLeft;
-					_sprite.ShowFrame(9);
-					//_sprite.Play("WalkLeft");
+					_sprite.ShowFrame(10);
+					_sprite.Play("WalkLeft");
 				}
 			} else if (_characterController.IsJumping()) {
 				if (_currentAnimation != Animations.JumpLeft) {

@@ -20,7 +20,7 @@ public class TextGen : EditorWindow
 	public void OnGUI ()
 	{
 		GUILayout.Label ("Import a Text Gen File", EditorStyles.boldLabel);
-		file = EditorGUILayout.ObjectField ("Text Gen File", file, typeof(Object));
+		file = EditorGUILayout.ObjectField ("Text Gen File", file, typeof(Object), false);
 		EditorGUIUtility.LookLikeControls (283.0f);
 		deleteAfterImport = EditorGUILayout.Toggle ("Delete template instances after import?", deleteAfterImport);
 		
