@@ -20,7 +20,7 @@ public class TextGen : EditorWindow {
         file = EditorGUILayout.ObjectField("Text Gen File", file, typeof(Object), false);
         EditorGUIUtility.LookLikeControls(283.0f);
         deleteAfterImport = EditorGUILayout.Toggle("Delete template instances after import?", deleteAfterImport);
-        
+
         GUILayout.BeginArea(new Rect(240, 65, 100, 100));
         if (GUILayout.Button("Import!", GUILayout.Width(60))) {
             DoImport();
@@ -38,9 +38,7 @@ public class TextGen : EditorWindow {
             foreach (Object sprite in allSprites) {
                 if (((Sprite)sprite).gameObject.tag == "TextGenTemplate") {
                     string spriteName = ((Sprite)sprite).name;
-                    GameObject container = new GameObject(spriteName + "Container");
                     templateSprites.Add(spriteName, sprite);
-                    templateParents.Add(spriteName, container);
                 }
             }
             
@@ -62,22 +60,39 @@ public class TextGen : EditorWindow {
                     string[] keyPair = line.Replace(";=", "").Split(':');
                     string[] values = Regex.Split(keyPair[1], @",\s*");
                     string spriteName = values[0];
-                    GameObject templateParent = (GameObject)templateParents[spriteName];
-                    
-                    keyReference.Add (keyPair[0], spriteName);
+                    string containerName = spriteName + "Container";
+                    Vector3 containerTransform = Vector3.zero;
+
+                    // Get all the settings for this instance's parent container
+                    keyReference.Add(keyPair[0], spriteName);
                     foreach (string attributeValue in values) {
                         if (attributeValue.StartsWith("z=")) {    // instance container z-depth
                             int depth = int.Parse(attributeValue.Replace("z=", ""));
-                            templateParent.transform.position = new Vector3(0, 0, depth);
+                            containerTransform = new Vector3(0, 0, depth);
                         }
                         if (attributeValue.StartsWith("n=")) {    // instance container name
-                            templateParent.name = attributeValue.Replace("n=", "");
+                            containerName = attributeValue.Replace("n=", "");
                         }
                     }
+
+                    // Try to find the parent in the hierarchy. If it doesn't exist yet,
+                    // create it, and apply the settings we found from above.
+                    GameObject templateParent = GameObject.Find(containerName);
+                    if (templateParent == null) {
+                        templateParent = new GameObject(containerName);
+                        templateParent.transform.position = containerTransform;
+                    }
+
+                    // Add our container to the hashtable for lookup later.
+                    templateParents.Add(spriteName, templateParent);
                 } else if (line.StartsWith(";s=")) {    // Scale
-                    scale = int.Parse (line.Replace(";s=", ""));
-                } else if (line.StartsWith(";n=")){    // parent container
-                    parentContainer = new GameObject(line.Replace(";n=", ""));
+                    scale = int.Parse(line.Replace(";s=", ""));
+                } else if (line.StartsWith(";n=")) {    // parent container
+                    string parentContainerName = line.Replace(";n=", "");
+                    parentContainer = GameObject.Find(parentContainerName);
+                    if (parentContainer == null) {
+                        parentContainer = new GameObject(parentContainerName);
+                    }
                 } else if (line.StartsWith(";z=")) {   // global z-depth
                     globalDepth = int.Parse(line.Replace(";z=", ""));
                 } else if (line.StartsWith(";+")) {    // Start of map definition
@@ -114,7 +129,7 @@ public class TextGen : EditorWindow {
                         
                         // Add our instance to its parent GameObject
                         ((GameObject)dupe).transform.parent = ((GameObject)templateParents[keyReference[key]]).transform;
-                        
+
                         // Set the new instance's position
                         ((GameObject)dupe).transform.localPosition = new Vector3(x * scale, y * scale, 0);
                     }
@@ -136,7 +151,7 @@ public class TextGen : EditorWindow {
                     templateParent.transform.localPosition = new Vector3(0, 0, globalDepth);
                 }
             }
-            
+
             if (deleteAfterImport) {
                 // Destroy the template instances
                 foreach (DictionaryEntry pair in templateSprites) {

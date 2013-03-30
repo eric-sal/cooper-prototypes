@@ -10,11 +10,7 @@ public class AnimatedSprite : Sprite {
     private int _currentFrame = -1;
     private bool _isPlaying = false;
     private float _frameTime = 0;
-    
-    public override void Awake() {
-        base.Awake();
-    }
-    
+
     public override void Start() {
         if (playOnStart) {
             Play();

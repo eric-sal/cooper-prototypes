@@ -10,7 +10,7 @@ using XmlExtensions;
 public class SpriteContainer : MonoBehaviour {
     public Texture texture;
     public SpriteData[] spriteData;
-    [OnChange ("UpdateAtlasDataFile")] public TextAsset atlasDataFile = null;
+    [OnChange ("UpdateAtlasDataFile", typeof(TextAsset))] public TextAsset atlasDataFile = null;
     [OnChange ("UpdateReloadData")] public bool reloadData = false;
     
     private Material _material;
@@ -41,7 +41,7 @@ public class SpriteContainer : MonoBehaviour {
     // rather than duplicate it for each SpriteData object in our array.
     public void InitVertices() {
         UpdateVertices(0);
-        
+
         // also update the triangles - Clockwise winding
         triangles[0] = 0;        //  2               2 ___ 3
         triangles[1] = 2;        //  |\        Verts: |\  |

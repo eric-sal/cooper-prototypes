@@ -13,10 +13,10 @@ public class SpriteAnimation : MonoBehaviour {
             }
         #endif
     }
-    
+
     public AnimationFrameset GetFrameset(string framesetName) {
         AnimationFrameset frameset = null;
-        
+
         if (framesetName == "") {
             return null;
         }

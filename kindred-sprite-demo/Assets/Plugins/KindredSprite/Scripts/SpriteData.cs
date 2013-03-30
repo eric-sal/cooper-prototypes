@@ -8,7 +8,7 @@ public class SpriteData {
     public Vector2 sheetPixelCoords;        // coords of frame on actual image in pixels
     public Texture texture;
     public Vector2[] uvs = new Vector2[4];  // 4 coords for each sprite - upper-left, lower-left, lower-right, upper-right
-    
+
     public void UpdateUVs() {
         if (texture != null) {
             Vector2 lowerLeftUV = PixelCoordToUVCoord(sheetPixelCoords.x, sheetPixelCoords.y);
@@ -21,7 +21,7 @@ public class SpriteData {
             uvs[3] = lowerLeftUV - yOffset + uvDimensions;                     // upper-right
         }
     }
-    
+
     // By creating our mesh vertices as a 1x1 unit square, we can adjust the GameObject's
     // scale to exactly match the pixel height/width of the sprite.
     // Unity recommends using a 1 unit = 1 meter scale for the best physics emulation
@@ -29,7 +29,6 @@ public class SpriteData {
     public Vector3 RecalculateSize() {
         return new Vector3(size.x, size.y, 1);
     }
-        
 
     // Converts pixel-space values to UV-space scalar values
     // according to the currently assigned material.
