@@ -12,10 +12,10 @@ public class SpriteContainer : MonoBehaviour {
     public SpriteData[] spriteData;
     [OnChange ("UpdateAtlasDataFile", typeof(TextAsset))] public TextAsset atlasDataFile = null;
     [OnChange ("UpdateReloadData")] public bool reloadData = false;
-    
+
     private Material _material;
     private XmlNode _subTexture = null;
-    
+
     // We don't want to show any of these in the editor, but we want them to be
     // saved on the GameObject, and get serialized properly when starting the player.
     [HideInInspector] public Vector3[] vertices = new Vector3[4];    // 4 coords for upper-left, lower-left, lower-right, upper-right
@@ -137,7 +137,13 @@ public class SpriteContainer : MonoBehaviour {
         if (atlasDataFile != null) {
             ImportAtlasData();
         }
-        
+
         reloadData = false;
+
+        #if UNITY_EDITOR
+            if (!Application.isPlaying) {
+                UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(this);
+            }
+        #endif
     }
 }
