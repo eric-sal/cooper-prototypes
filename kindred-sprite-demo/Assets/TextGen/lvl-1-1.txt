@@ -1,18 +1,21 @@
-;n=LevelContainer
+;n=Foreground
 ;s=16
-;=T:Ground
+;=T:Ground,n=GroundBlock
 ;=?:QuestionBlock,n=Blocks
 ;==:Brick,n=Blocks
-;=M:SolidBlock,n=Blocks
+;=M:SolidBlock,n=GroundBlock
+;=P:Pipe,n=Pipes
+;=-:PipeSegment,n=Pipes
 ;+
+
 
                       ?                                                         ========   ===?              ?           ===    =??=                                                        MM
                                                                                                                                                                                            MMM
                                                                                                                                                                                           MMMM
                                                                                                                                                                                          MMMMM
-                ?   =?=?=                                                    =?=              ?    ==     ?  ?  ?     =          ==      M  M          MM  M            ==?=            MMMMMM
-                                                                                                                                        MM  MM        MMM  MM                          MMMMMMM
-                                                                                                                                       MMM  MMM      MMMM  MMM                        MMMMMMMM
-                                                                                                                                      MMMM  MMMM    MMMMM  MMMM                      MMMMMMMMM        M
+                ?   =?=?=                     ``         ``                  =?=              =    ==     ?  ?  ?     =          ==      M  M          MM  M            ==?=            MMMMMM
+                                      ``      P`         P`                                                                             MM  MM        MMM  MM                          MMMMMMM
+                            ``        P`      -`         -`                                                                            MMM  MMM      MMMM  MMM     ``              `` MMMMMMMM
+                            P`        -`      -`         -`                                                                           MMMM  MMMM    MMMMM  MMMM    P`              P`MMMMMMMMM        M
 TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT  TTTTTTTTTTTTTTT   TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT  TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
 TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT  TTTTTTTTTTTTTTT   TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT  TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT

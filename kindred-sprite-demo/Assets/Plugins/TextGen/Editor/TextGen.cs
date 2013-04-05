@@ -108,7 +108,7 @@ public class TextGen : EditorWindow {
                 
                 for (var x = 0; x < line.Length; x++) {
                     string key = line[x].ToString();
-                    if (key != " ") {
+                    if (key != " " && key != "`") {  // ignore spaces and back ticks (`)
                         Sprite sprite = (Sprite)templateSprites[keyReference[key]];    // The template sprite we want to dupe
 
                         // We want to use InstantiatePrefab because we want to maintain the link to the
