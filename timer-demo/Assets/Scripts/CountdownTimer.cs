@@ -7,24 +7,29 @@ public class CountdownTimer : MonoBehaviour {
 
     /* *** Member Variables *** */
 
-    public float startTime = 0;
+    public double startTime = 0;
     public bool countDown = true;   // count up or down
     public float timeScale = 1;     // Adjust the speed at which the timer counts
-
+	
     private bool _paused = false;
-    private float _currentTime;
-    private float _previousTime;
+	private int _step = 1;
+    private double _currentTime;
+    private double _previousTime;
 
     /* *** "Contstructors" (Start, Awake) *** */
 
     public void Awake() {
         _currentTime = startTime;
         _previousTime = _currentTime;
+		
+		if (countDown) {
+			_step = -1;
+		}
     }
 
     /* *** Properties *** */
 
-    public float currentTime {
+    public double currentTime {
         get { return _currentTime; }
     }
 
@@ -33,23 +38,23 @@ public class CountdownTimer : MonoBehaviour {
     }
 
     public int hours {
-        get { return Mathf.FloorToInt(currentTime / 3600); }
+        get { return (int)Math.Floor(currentTime / 3600); }
     }
 
     public int minutes {
-        get { return Mathf.FloorToInt((currentTime - hours * 3600) / 60); }
+        get { return (int)Math.Floor((currentTime - hours * 3600) / 60); }
     }
 
     public int seconds {
-        get { return Mathf.FloorToInt(currentTime - hours * 3600 - minutes * 60); }
+        get { return (int)Math.Floor(currentTime - hours * 3600 - minutes * 60); }
     }
 
     public int milliseconds {
-        get { return Mathf.FloorToInt((currentTime - (float)Math.Truncate(currentTime)) * 100); }
+        get { return (int)Math.Floor((currentTime - (double)Math.Truncate(currentTime)) * 100); }
     }
 
-    public float deltaTime {
-        get { return Mathf.Abs(_previousTime - _currentTime); }
+    public double deltaTime {
+        get { return Math.Abs(_previousTime - _currentTime); }
     }
 
     /* *** MonoBehaviour/Overrideable Methods *** */
@@ -57,13 +62,7 @@ public class CountdownTimer : MonoBehaviour {
     public void FixedUpdate() {
         if (!paused) {
             _previousTime = _currentTime;
-            float deltaTime = Time.deltaTime * timeScale;
-
-            if (countDown) {
-                deltaTime *= -1;
-            }
-    
-            _currentTime += deltaTime;
+            _currentTime += Time.deltaTime * timeScale * _step;
         }
     }
 
@@ -78,6 +77,6 @@ public class CountdownTimer : MonoBehaviour {
     }
 
     public override string ToString() {
-        return hours.ToString("D2") + ":" + minutes.ToString("D2") + ":" + seconds.ToString("D2") + ":" + milliseconds.ToString("D2");
+		return String.Format("{0:00}:{1:00}:{2:00}.{3:00}", hours, minutes, seconds, milliseconds);
     }
 }
