@@ -45,23 +45,23 @@ public class CountdownGUI : MonoBehaviour {
     }
 
     public void FixedUpdate() {
-		if (!_gameTimer.paused) {
-	        double dt = _gameTimer.deltaTime;
-	        _currentTime += dt;
-	
-	        double rotationX = startingRotationX + _rotationSpeed * _currentTime * -360;
-	
-	        if (continuous) {
-	            transform.rotation = Quaternion.Euler((float)rotationX, 0, 90);
-	        } else {
-	            _tickTime += dt;
-	            if (_tickTime >= _timeUnit) {
-	                // I'll have to write my own animation for a smooth rotation from previous position to new position.
-	                // Because of the way Unity stores rotations as quaternions (and I don't know what that means).
-	                transform.rotation = Quaternion.Euler((float)rotationX, 0, 90);
-	                _tickTime = _tickTime - _timeUnit;
-	            }
-	        }
-		}
+        if (!_gameTimer.paused) {
+            double dt = _gameTimer.deltaTime;
+            _currentTime += dt;
+ 
+            double rotationX = startingRotationX + _rotationSpeed * _currentTime * -360;
+ 
+            if (continuous) {
+                transform.rotation = Quaternion.Euler((float)rotationX, 0, 90);
+            } else {
+                _tickTime += dt;
+                if (_tickTime >= _timeUnit) {
+                    // I'll have to write my own animation for a smooth rotation from previous position to new position.
+                    // Because of the way Unity stores rotations as quaternions (and I don't know what that means).
+                    transform.rotation = Quaternion.Euler((float)rotationX, 0, 90);
+                    _tickTime = _tickTime - _timeUnit;
+                }
+            }
+        }
     }
 }

@@ -10,9 +10,9 @@ public class CountdownTimer : MonoBehaviour {
     public double startTime = 0;
     public bool countDown = true;   // count up or down
     public float timeScale = 1;     // Adjust the speed at which the timer counts
-	
+ 
     private bool _paused = false;
-	private int _step = 1;
+    private int _step = 1;
     private double _currentTime;
     private double _previousTime;
 
@@ -21,10 +21,10 @@ public class CountdownTimer : MonoBehaviour {
     public void Awake() {
         _currentTime = startTime;
         _previousTime = _currentTime;
-		
-		if (countDown) {
-			_step = -1;
-		}
+     
+        if (countDown) {
+            _step = -1;
+        }
     }
 
     /* *** Properties *** */
@@ -77,6 +77,6 @@ public class CountdownTimer : MonoBehaviour {
     }
 
     public override string ToString() {
-		return String.Format("{0:00}:{1:00}:{2:00}.{3:00}", hours, minutes, seconds, milliseconds);
+        return String.Format("{0:00}:{1:00}:{2:00}.{3:00}", hours, minutes, seconds, milliseconds);
     }
 }
