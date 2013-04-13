@@ -2,15 +2,20 @@ using UnityEngine;
 using System.Collections;
 
 public class SceneController : MonoBehaviour {
+    private CountdownTimer _gameTimer;
 
-    // Use this for initialization
-    void Start() {
-    
+    public void Awake() {
+        _gameTimer = (CountdownTimer)GetComponent("CountdownTimer");
     }
-    
-    // Update is called once per frame
-    void Update() {
-    
+
+    public void Update() {
+        if (Input.GetButtonDown("Pause")) {
+            if (_gameTimer.paused) {
+                _gameTimer.Unpause();
+            } else {
+                _gameTimer.Pause();
+            }
+        }
     }
 }
 
