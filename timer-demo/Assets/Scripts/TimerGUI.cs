@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class TimerGUI : MonoBehaviour {
-    private CountdownTimer _gameTimer;
+    private GameTimer _gameTimer;
     private GUIStyle _centeredWhiteText = new GUIStyle();
     private Dictionary<string, int> _boxSize = new Dictionary<string, int>() { {"width", 100}, {"height", 40} };
     private Dictionary<string, int> _boxPosition = new Dictionary<string, int>();
@@ -12,7 +12,7 @@ public class TimerGUI : MonoBehaviour {
     private Rect _pausedBox;
 
     public void Awake() {
-        _gameTimer = (CountdownTimer)GetComponent("CountdownTimer");
+        _gameTimer = (GameTimer)GetComponent("GameTimer");
 
         _centeredWhiteText.alignment = TextAnchor.MiddleCenter;
         _centeredWhiteText.normal.textColor = Color.white;

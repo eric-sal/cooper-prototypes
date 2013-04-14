@@ -1,16 +1,27 @@
 using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
 public class CountdownGUI : MonoBehaviour {
-    public enum Position { Hundreths, Tenths, SecondsOnes, SecondsTens, MinutesOnes, MinutesTens, HoursOnes, HoursTens };
+    public enum Position {
+        Hundreths,
+        Tenths,
+        SecondsOnes,
+        SecondsTens,
+        MinutesOnes,
+        MinutesTens,
+        HoursOnes,
+        HoursTens
+    };
+
     public Position position;
     public float startingRotationX;
     public bool continuous = true;
 
-    private CountdownTimer _gameTimer;
-    private float _currentTime = 0;
-    private float _tickTime = 0;
+    private GameTimer _gameTimer;
+    private double _currentTime = 0;
+    private double _tickTime = 0;
 
     private float _rotationSpeed;
     private Dictionary<Position, float> _rotationSpeeds = new Dictionary<Position, float>() {
@@ -27,27 +38,29 @@ public class CountdownGUI : MonoBehaviour {
     };
 
     public void Start() {
-        _gameTimer = (CountdownTimer)GameObject.Find("SceneController").GetComponent("CountdownTimer");
+        _gameTimer = (GameTimer)GameObject.Find("SceneController").GetComponent("GameTimer");
         _rotationSpeed = _rotationSpeeds[position];
         _timeUnit = _timeUnits[position];
         transform.rotation = Quaternion.Euler(startingRotationX, 0, 90);
     }
 
     public void FixedUpdate() {
-        float dt = _gameTimer.deltaTime;
-        _currentTime += dt;
-
-        float rotationX = startingRotationX + _rotationSpeed * _currentTime * -360;
-
-        if (continuous) {
-            transform.rotation = Quaternion.Euler(rotationX, 0, 90);
-        } else {
-            _tickTime += dt;
-            if (_tickTime >= _timeUnit) {
-                // I'll have to write my own animation for a smooth rotation from previous position to new position.
-                // Because of the way Unity stores rotations as quaternions (and I don't know what that means).
-                transform.rotation = Quaternion.Euler(rotationX, 0, 90);
-                _tickTime = _tickTime - _timeUnit;
+        if (!_gameTimer.paused) {
+            double dt = _gameTimer.deltaTime;
+            _currentTime += dt;
+ 
+            double rotationX = startingRotationX + _rotationSpeed * _currentTime * -360;
+ 
+            if (continuous) {
+                transform.rotation = Quaternion.Euler((float)rotationX, 0, 90);
+            } else {
+                _tickTime += dt;
+                if (_tickTime >= _timeUnit) {
+                    // I'll have to write my own animation for a smooth rotation from previous position to new position.
+                    // Because of the way Unity stores rotations as quaternions (and I don't know what that means).
+                    transform.rotation = Quaternion.Euler((float)rotationX, 0, 90);
+                    _tickTime = _tickTime - _timeUnit;
+                }
             }
         }
     }
