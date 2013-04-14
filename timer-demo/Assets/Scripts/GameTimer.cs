@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 
 // This is ticking off seconds slower than realtime. Why?
-public class CountdownTimer : MonoBehaviour {
+public class GameTimer : MonoBehaviour {
 
     /* *** Member Variables *** */
 

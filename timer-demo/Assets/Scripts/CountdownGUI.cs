@@ -19,7 +19,7 @@ public class CountdownGUI : MonoBehaviour {
     public float startingRotationX;
     public bool continuous = true;
 
-    private CountdownTimer _gameTimer;
+    private GameTimer _gameTimer;
     private double _currentTime = 0;
     private double _tickTime = 0;
 
@@ -38,7 +38,7 @@ public class CountdownGUI : MonoBehaviour {
     };
 
     public void Start() {
-        _gameTimer = (CountdownTimer)GameObject.Find("SceneController").GetComponent("CountdownTimer");
+        _gameTimer = (GameTimer)GameObject.Find("SceneController").GetComponent("GameTimer");
         _rotationSpeed = _rotationSpeeds[position];
         _timeUnit = _timeUnits[position];
         transform.rotation = Quaternion.Euler(startingRotationX, 0, 90);

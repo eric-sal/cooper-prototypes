@@ -2,10 +2,10 @@ using UnityEngine;
 using System.Collections;
 
 public class SceneController : MonoBehaviour {
-    private CountdownTimer _gameTimer;
+    private GameTimer _gameTimer;
 
     public void Awake() {
-        _gameTimer = (CountdownTimer)GetComponent("CountdownTimer");
+        _gameTimer = (GameTimer)GetComponent("GameTimer");
     }
 
     public void Update() {
