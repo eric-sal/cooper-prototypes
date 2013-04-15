@@ -16,18 +16,19 @@ public class CountdownGUI : MonoBehaviour {
     };
 
     public Position position;
-    public float startingRotationX;
+    public double startingRotationX;
     public bool continuous = true;
 
     private GameTimer _gameTimer;
     private double _currentTime = 0;
     private double _tickTime = 0;
+    private double _currentX;
 
-    private float _rotationSpeed;
+    private float _rotationSpeed;   // degrees per second
     private Dictionary<Position, float> _rotationSpeeds = new Dictionary<Position, float>() {
-        { Position.Hundreths, 10.0f }, { Position.Tenths, 1.0f }, { Position.SecondsOnes, 0.1f },
-        { Position.SecondsTens, 0.0166666667f }, { Position.MinutesOnes, 0.0016666667f }, { Position.MinutesTens, 0.0001666667f },
-        { Position.HoursOnes, 0.00001f }, { Position.HoursTens, 0.0000016667f }
+        { Position.Hundreths, -3600 }, { Position.Tenths, -360 }, { Position.SecondsOnes, -36 },
+        { Position.SecondsTens, -6 }, { Position.MinutesOnes, -0.6f }, { Position.MinutesTens, -0.1f },
+        { Position.HoursOnes, -0.01f }, { Position.HoursTens, -0.0016666667f }
     };
 
     private float _timeUnit;
@@ -41,24 +42,23 @@ public class CountdownGUI : MonoBehaviour {
         _gameTimer = (GameTimer)GameObject.Find("SceneController").GetComponent("GameTimer");
         _rotationSpeed = _rotationSpeeds[position];
         _timeUnit = _timeUnits[position];
-        transform.rotation = Quaternion.Euler(startingRotationX, 0, 90);
+        _currentX = startingRotationX;
+        transform.rotation = Quaternion.Euler((float)startingRotationX, 0, 90);
     }
 
     public void FixedUpdate() {
         if (!_gameTimer.paused) {
             double dt = _gameTimer.deltaTime;
-            _currentTime += dt;
- 
-            double rotationX = startingRotationX + _rotationSpeed * _currentTime * -360;
- 
+            _currentX += _rotationSpeed * dt;
+
             if (continuous) {
-                transform.rotation = Quaternion.Euler((float)rotationX, 0, 90);
+                transform.rotation = Quaternion.Euler((float)_currentX, 0, 90);
             } else {
                 _tickTime += dt;
                 if (_tickTime >= _timeUnit) {
                     // I'll have to write my own animation for a smooth rotation from previous position to new position.
                     // Because of the way Unity stores rotations as quaternions (and I don't know what that means).
-                    transform.rotation = Quaternion.Euler((float)rotationX, 0, 90);
+                    transform.rotation = Quaternion.Euler((float)_currentX, 0, 90);
                     _tickTime = _tickTime - _timeUnit;
                 }
             }
