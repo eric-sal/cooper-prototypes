@@ -114,9 +114,13 @@ public abstract class AbstractCharacterController : MonoBehaviour {
                     _transform.position = new Vector3(_transform.position.x - hDistance, _transform.position.y, 0);
                 }
 
-                // TODO: Fire collision events
-                //SendMessage('OnEventCollision', { 'collider': hitInfo.collider, 'normal': hitInfo.normal }, SendMessageOptions.DontRequireReceiver);    // Let this GameObject know we hit something
-                //hitInfo.collider.SendMessage("OnEventCollision", { 'collider': collider, 'normal': hitInfo.normal }, SendMessageOptions.DontRequireReceiver);   // let the object we hit know that it got hit
+                GameObject collidedWith = hitInfo.collider.gameObject;
+                OnCollision(collidedWith);
+                AbstractCharacterController otherController = collidedWith.GetComponent<AbstractCharacterController>();
+                if (otherController != null) {
+                    otherController.OnCollision(this.gameObject);
+                }
+
             } else {
                 // we didn't have a horizontal collision, offset the vertical rays by the amount the player moved
                 rayOrigin.x += hDistance;
@@ -152,16 +156,23 @@ public abstract class AbstractCharacterController : MonoBehaviour {
                 _transform.position = new Vector3(_transform.position.x, _transform.position.y - vDistance, 0);
             }
 
-            // TODO: Fire collision events
-            //SendMessage('OnEventCollision', { 'collider': hitInfo.collider, 'normal': hitInfo.normal }, SendMessageOptions.DontRequireReceiver);    // Let this GameObject know we hit something
-            //hitInfo.collider.SendMessage("OnEventCollision", { 'collider': collider, 'normal': hitInfo.normal }, SendMessageOptions.DontRequireReceiver);   // let the object we hit know that it got hit
+            GameObject collidedWith = hitInfo.collider.gameObject;
+            OnCollision(collidedWith);
+            AbstractCharacterController otherController = collidedWith.GetComponent<AbstractCharacterController>();
+            if (otherController != null) {
+                otherController.OnCollision(this.gameObject);
+            }
+
         } else {
             _character.isGrounded = false;
         }
     }
 
-    // TODO: Convert to event handler
     protected virtual void Jump(float multiplier = 1.0f) {
+        if (_character.isJumping) {
+            return;
+        }
+
         if (Mathf.Abs(_character.velocity.y) <= _jumpTolerance) {
             _character.isGrounded = _character.isWalking = false;
             _character.isJumping = true;
@@ -178,5 +189,14 @@ public abstract class AbstractCharacterController : MonoBehaviour {
     protected void AddVelocity(Vector2 v) {
         _character.velocity.x += v.x;
         _character.velocity.y += v.y;
+    }
+
+    protected GameObject _lastCollidedWith;
+    protected virtual void OnCollision(GameObject collidedWith)  {
+        if (_lastCollidedWith == collidedWith) {
+            return;
+        }
+        Debug.Log(System.DateTime.Now.ToLongTimeString() + ": " + this.name + " collided with " + collidedWith.name);
+        _lastCollidedWith = collidedWith;
     }
 }
