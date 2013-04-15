@@ -15,7 +15,7 @@ public class MarioTwinController : AbstractCharacterController {
     }
 
     protected override void OnCollision(GameObject collidedWith) {
-        if (collidedWith.name == "Ground") {
+        if (collidedWith.tag == "Ground") {
             return;
         }
 
