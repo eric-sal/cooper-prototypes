@@ -32,8 +32,9 @@ public class MarioTwinController : AbstractCharacterController {
         base.OnCollision(collidedWith);
     }
 
-    protected override void OnLedgeReached() {
-        if (changeDirectionAtLedge) {
+    protected override void OnLedgeReached(Vector3 direction) {
+
+        if (changeDirectionAtLedge && direction.x == _character.facing.x) {
             _character.facing.x *= -1;
         }
 

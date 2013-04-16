@@ -167,14 +167,19 @@ public abstract class AbstractCharacterController : MonoBehaviour {
             _character.isGrounded = false;
         }
 
-        // If the character is on the ground, check to see if both rays cast from either
+        // If the character is on the ground, check to see if the rays cast from either
         // side of the character's collider are colliding with something. If one of the
         // rays does not collide with anything, then we've reached a ledge.
-        if (_character.isGrounded == true &&
-            (!Physics.Raycast(rayOrigin + xOffset, vDirection, absoluteDistance) ||
-            !Physics.Raycast(rayOrigin - xOffset, vDirection, absoluteDistance))) {
+        if (_character.isGrounded) {
+            if (!Physics.Raycast(rayOrigin + xOffset, vDirection, absoluteDistance)) {
+                // We've reached an edge to the right
+                OnLedgeReached(Vector3.right);
+            }
 
-            OnLedgeReached();
+            if (!Physics.Raycast(rayOrigin - xOffset, vDirection, absoluteDistance)) {
+                // We've reached an edge to the left
+                OnLedgeReached(-Vector3.right);
+            }
         }
     }
 
@@ -210,7 +215,7 @@ public abstract class AbstractCharacterController : MonoBehaviour {
         _lastCollidedWith = collidedWith;
     }
 
-    protected virtual void OnLedgeReached() {
-        Debug.Log("Ledge Reached");
+    protected virtual void OnLedgeReached(Vector3 direction) {
+        Debug.Log("Ledge Reached: " + direction);
     }
 }
