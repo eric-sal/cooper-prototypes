@@ -22,11 +22,6 @@ public class Sprite : MonoBehaviour {
     private Mesh _mesh;                 // mesh object created by script, and added to MeshFilter
     private bool _meshChanged = false;
 
-    public Vector2 position {
-        get { return new Vector2(_transform.position.x, _transform.position.y); }
-        set { _transform.position = new Vector3(value.x, value.y, _transform.position.z); }
-    }
-
     public virtual void Start() {
         _transform = transform;
         _meshFilter = gameObject.GetComponent<MeshFilter>();

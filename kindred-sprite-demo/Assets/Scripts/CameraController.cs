@@ -3,9 +3,8 @@ using System.Collections;
 
 public class CameraController : MonoBehaviour {
 
-    public PlayerView playerView; // set in unity
+    public Transform player; // set in unity
 
-    private Sprite _sprite;
     private Transform _camera;
     private Transform _bgCamera1;
     private Transform _bgCamera2;
@@ -16,11 +15,10 @@ public class CameraController : MonoBehaviour {
         _bgCamera1 = GameObject.FindWithTag("BGCamera1").transform;
         _bgCamera2 = GameObject.FindWithTag("BGCamera2").transform;
         _bgCamera3 = GameObject.FindWithTag("BGCamera3").transform;
-        _sprite = playerView.GetComponent<Sprite>();
     }
 
     void Update() {
-        var x = _sprite.position.x;
+        var x = player.position.x;
         _camera.position = new Vector3(x, _camera.position.y, _camera.position.z);
         _bgCamera1.position = new Vector3(x * 0.65f, _bgCamera1.position.y, _bgCamera1.position.z);
         _bgCamera2.position = new Vector3(x * 0.9f, _bgCamera2.position.y, _bgCamera2.position.z);
