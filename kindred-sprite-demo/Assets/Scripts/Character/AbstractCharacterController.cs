@@ -166,6 +166,16 @@ public abstract class AbstractCharacterController : MonoBehaviour {
         } else {
             _character.isGrounded = false;
         }
+
+        // If the character is on the ground, check to see if both rays cast from either
+        // side of the character's collider are colliding with something. If one of the
+        // rays does not collide with anything, then we've reached a ledge.
+        if (_character.isGrounded == true &&
+            (!Physics.Raycast(rayOrigin + xOffset, vDirection, absoluteDistance) ||
+            !Physics.Raycast(rayOrigin - xOffset, vDirection, absoluteDistance))) {
+
+            OnLedgeReached();
+        }
     }
 
     protected virtual void Jump(float multiplier = 1.0f) {
@@ -192,11 +202,15 @@ public abstract class AbstractCharacterController : MonoBehaviour {
     }
 
     protected GameObject _lastCollidedWith;
-    protected virtual void OnCollision(GameObject collidedWith)  {
+    protected virtual void OnCollision(GameObject collidedWith) {
         if (_lastCollidedWith == collidedWith) {
             return;
         }
         Debug.Log(System.DateTime.Now.ToLongTimeString() + ": " + this.name + " collided with " + collidedWith.name);
         _lastCollidedWith = collidedWith;
+    }
+
+    protected virtual void OnLedgeReached() {
+        Debug.Log("Ledge Reached");
     }
 }

@@ -5,6 +5,8 @@ public class MarioTwinController : AbstractCharacterController {
 
     public bool changeDirectionOnCollision;
     public bool jumpOnCollision;
+    public bool changeDirectionAtLedge;
+    public bool jumpAtLedge;
 
 	protected override void Act() {
         _character.velocity.x = _character.maxWalkSpeed * _character.facing.x;
@@ -28,5 +30,15 @@ public class MarioTwinController : AbstractCharacterController {
         }
 
         base.OnCollision(collidedWith);
+    }
+
+    protected override void OnLedgeReached() {
+        if (changeDirectionAtLedge) {
+            _character.facing.x *= -1;
+        }
+
+        if (jumpAtLedge) {
+            Jump();
+        }
     }
 }
