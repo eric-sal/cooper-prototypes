@@ -15,4 +15,20 @@ public class CharacterState : MonoBehaviour {
     public bool isGrounded;
     public bool isWalking;
     public bool isJumping;
+
+    public bool isMovingRight {
+        get { return velocity.x > 0; }
+    }
+
+    public bool isMovingLeft {
+        get { return velocity.x < 0; }
+    }
+
+    public bool isMovingUp {
+        get { return velocity.y > 0; }
+    }
+
+    public bool isMovingDown {
+        get { return velocity.y < 0; }
+    }
 }

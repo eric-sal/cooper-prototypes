@@ -16,22 +16,6 @@ public class MarioTwinController : AbstractCharacterController {
         }
     }
 
-    protected override void OnCollision(GameObject collidedWith) {
-        if (collidedWith.tag == "Ground") {
-            return;
-        }
-
-        if (changeDirectionOnCollision) {
-            _character.facing.x *= -1;
-        }
-
-        if (jumpOnCollision) {
-            Jump();
-        }
-
-        base.OnCollision(collidedWith);
-    }
-
     protected override void OnLedgeReached(Vector3 direction) {
 
         if (changeDirectionAtLedge && direction.x == _character.facing.x) {
@@ -39,6 +23,21 @@ public class MarioTwinController : AbstractCharacterController {
         }
 
         if (jumpAtLedge) {
+            Jump();
+        }
+    }
+
+    public void HandleSpecialCollision(PlayerCharacterController player, Vector3 fromDirection, float distance) {
+        Debug.Log(string.Format("Mario Twin collided with {0}.  They look so goddamn like the same person.", player.name));
+
+        // standard behavior to prevent overlapping sprites
+        base.HandleNormalCollision(player.collider, fromDirection, distance);
+
+        if (changeDirectionOnCollision) {
+            _character.facing.x *= -1;
+        }
+
+        if (jumpOnCollision) {
             Jump();
         }
     }
