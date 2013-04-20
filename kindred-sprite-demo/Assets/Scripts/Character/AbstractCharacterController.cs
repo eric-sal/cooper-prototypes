@@ -11,7 +11,7 @@ using System.Collections;
 ///
 /// Sub-classes should modify character state in the 'Act' function.
 /// </summary>
-public abstract class AbstractCharacterController : MonoBehaviour {
+public abstract class AbstractCharacterController : AbstractCollisionHandler {
 
     protected CharacterState _character;
     protected Sprite _sprite;
@@ -87,6 +87,7 @@ public abstract class AbstractCharacterController : MonoBehaviour {
         Vector3 rayOrigin = this.collider.bounds.center;
         float absoluteDistance;
         RaycastHit hitInfo;
+        AbstractCollisionHandler otherHandler;
 
         // cast horizontal rays
         float hVelocity = _character.velocity.x;
@@ -105,20 +106,16 @@ public abstract class AbstractCharacterController : MonoBehaviour {
                 Physics.Raycast(rayOrigin - yOffset, hDirection, out hitInfo, absoluteDistance)) {
 
                 // a horizontal collision has occurred
-                _character.velocity.x = 0;
-                hDistance = hitInfo.distance - _colliderBoundsOffsetX;
-
-                if (hDirection == Vector3.right) {
-                    _transform.position = new Vector3(_transform.position.x + hDistance, _transform.position.y, 0);
-                } else {
-                    _transform.position = new Vector3(_transform.position.x - hDistance, _transform.position.y, 0);
+                otherHandler = hitInfo.collider.gameObject.GetComponent<AbstractCollisionHandler>();
+                if (otherHandler != null) {
+                    // let the collision handlers do their thing
+                    float hitDistance = hitInfo.distance;
+                    otherHandler.OnCollision(this, hDirection * -1, hitDistance);
+                    this.OnCollision(otherHandler, hDirection, hitDistance);
                 }
-
-                GameObject collidedWith = hitInfo.collider.gameObject;
-                OnCollision(collidedWith);
-                AbstractCharacterController otherController = collidedWith.GetComponent<AbstractCharacterController>();
-                if (otherController != null) {
-                    otherController.OnCollision(this.gameObject);
+                else {
+                    // no special collision handler, we'll handle this ourselves
+                    this.OnCollision(hitInfo.collider, hDirection, hitInfo.distance);
                 }
 
             } else {
@@ -143,24 +140,16 @@ public abstract class AbstractCharacterController : MonoBehaviour {
             Physics.Raycast(rayOrigin - xOffset, vDirection, out hitInfo, absoluteDistance)) {
 
             // a vertical collision has occurred
-            _character.velocity.y = 0;
-            vDistance = hitInfo.distance - _colliderBoundsOffsetY;
-
-            if (vDirection == Vector3.up) {
-                // bumped our head
-                _transform.position = new Vector3(_transform.position.x, _transform.position.y + vDistance, 0);
-            } else {
-                // hit the gound
-                _character.isGrounded = true;
-                _character.isJumping = false;
-                _transform.position = new Vector3(_transform.position.x, _transform.position.y - vDistance, 0);
+            otherHandler = hitInfo.collider.gameObject.GetComponent<AbstractCollisionHandler>();
+            if (otherHandler != null) {
+                // let the collision handlers do their thing
+                float hitDistance = hitInfo.distance;
+                otherHandler.OnCollision(this, vDirection * -1, hitDistance);
+                this.OnCollision(otherHandler, vDirection, hitDistance);
             }
-
-            GameObject collidedWith = hitInfo.collider.gameObject;
-            OnCollision(collidedWith);
-            AbstractCharacterController otherController = collidedWith.GetComponent<AbstractCharacterController>();
-            if (otherController != null) {
-                otherController.OnCollision(this.gameObject);
+            else {
+                // no special collision handler, we'll handle this ourselves
+                this.OnCollision(hitInfo.collider, vDirection, hitInfo.distance);
             }
 
         } else {
@@ -183,7 +172,63 @@ public abstract class AbstractCharacterController : MonoBehaviour {
         }
     }
 
-    protected virtual void Jump(float multiplier = 1.0f) {
+    private AbstractCollisionHandler _lastAbstractHandler;
+    /// <summary>
+    /// Character's treat unhandled special collisions like normal collisions to prevent overlapping sprites.
+    /// </summary>
+    public override void HandleSpecialCollision(AbstractCollisionHandler other, Vector3 fromDirection, float distance) {
+
+        HandleNormalCollision(other.collider, fromDirection, distance);
+
+        if (other != _lastAbstractHandler) {
+            Debug.LogWarning(string.Format("{0} has no special collision behavior for {1}", this.name, other.name), this);
+            _lastAbstractHandler = other;
+        }
+    }
+
+    private Collider _lastCollidedWith;
+    /// <summary>
+    /// When a character runs into a collider without a handler, we'll stop the character's movement in that direction.
+    /// </summary>
+    public override void HandleNormalCollision(Collider collidedWith, Vector3 fromDirection, float distance) {
+
+        if (collidedWith != _lastCollidedWith) {
+            //Debug.Log(string.Format("Entered HandleCollision for {0}. We collided with {1} from direction {2}", this.name, collidedWith.name, fromDirection));
+            _lastCollidedWith = collidedWith;
+        }
+
+        // a collision in the direction we are moving means we should stop moving
+        if (_character.isMovingRight && fromDirection == Vector3.right ||
+            _character.isMovingLeft && fromDirection == -Vector3.right) {
+
+            _character.velocity.x = 0;
+            float hDistance = distance - _colliderBoundsOffsetX;
+
+            if (fromDirection == Vector3.right) {
+                _transform.position = new Vector3(_transform.position.x + hDistance, _transform.position.y, 0);
+            } else {
+                _transform.position = new Vector3(_transform.position.x - hDistance, _transform.position.y, 0);
+            }
+
+        } else if (_character.isMovingUp && fromDirection == Vector3.up ||
+            _character.isMovingDown && fromDirection == -Vector3.up) {
+
+            _character.velocity.y = 0;
+            float vDistance = distance - _colliderBoundsOffsetY;
+
+            if (fromDirection == Vector3.up) {
+                // bumped our head
+                _transform.position = new Vector3(_transform.position.x, _transform.position.y + vDistance, 0);
+            } else {
+                // hit the gound
+                _character.isGrounded = true;
+                _character.isJumping = false;
+                _transform.position = new Vector3(_transform.position.x, _transform.position.y - vDistance, 0);
+            }
+        }
+    }
+
+    public virtual void Jump(float multiplier = 1.0f) {
         if (_character.isJumping) {
             return;
         }
@@ -206,16 +251,7 @@ public abstract class AbstractCharacterController : MonoBehaviour {
         _character.velocity.y += v.y;
     }
 
-    protected GameObject _lastCollidedWith;
-    protected virtual void OnCollision(GameObject collidedWith) {
-        if (_lastCollidedWith == collidedWith) {
-            return;
-        }
-        Debug.Log(System.DateTime.Now.ToLongTimeString() + ": " + this.name + " collided with " + collidedWith.name);
-        _lastCollidedWith = collidedWith;
-    }
-
     protected virtual void OnLedgeReached(Vector3 direction) {
-        Debug.Log("Ledge Reached: " + direction);
+        //Debug.Log(this.name + " reached ledge " + direction);
     }
 }
