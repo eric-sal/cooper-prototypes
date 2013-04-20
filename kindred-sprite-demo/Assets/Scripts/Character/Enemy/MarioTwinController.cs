@@ -8,7 +8,7 @@ public class MarioTwinController : AbstractCharacterController {
     public bool changeDirectionAtLedge;
     public bool jumpAtLedge;
 
-	protected override void Act() {
+    protected override void Act() {
         _character.velocity.x = _character.maxWalkSpeed * _character.facing.x;
         if (_character.velocity.y < 0) {
             // we are falling or about to fall!
@@ -23,21 +23,6 @@ public class MarioTwinController : AbstractCharacterController {
         }
 
         if (jumpAtLedge) {
-            Jump();
-        }
-    }
-
-    public void HandleSpecialCollision(PlayerCharacterController player, Vector3 fromDirection, float distance) {
-        Debug.Log(string.Format("Mario Twin collided with {0}.  They look so goddamn like the same person.", player.name));
-
-        // standard behavior to prevent overlapping sprites
-        base.HandleNormalCollision(player.collider, fromDirection, distance);
-
-        if (changeDirectionOnCollision) {
-            _character.facing.x *= -1;
-        }
-
-        if (jumpOnCollision) {
             Jump();
         }
     }

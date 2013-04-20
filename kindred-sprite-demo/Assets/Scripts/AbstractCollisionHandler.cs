@@ -13,18 +13,18 @@ public abstract class AbstractCollisionHandler : MonoBehaviour {
     /// Gets called when the GameObject we collided with has no collision handler component associated with it
     /// </summary>
     public void OnCollision(Collider collidedWith, Vector3 fromDirection, float distance) {
-        this.HandleNormalCollision(collidedWith, fromDirection, distance);
+        this.HandleCollision(collidedWith, fromDirection, distance);
     }
 
     /// <summary>
     /// Handles collision with colliders that don't have collision handlers; like the ground or other
     /// non-interactive things in the environment.
     /// </summary>
-    public abstract void HandleNormalCollision(Collider collidedWith, Vector3 fromDirection, float distance);
+    public abstract void HandleCollision(Collider collidedWith, Vector3 fromDirection, float distance);
 
 
     /// <summary>
-    /// A controller should call each collision handler's OnCollision method.  They in turn will call each other's HandleSpecialCollision methods.
+    /// A controller should call each collision handler's OnCollision method. They in turn will call each other's HandleCollision methods.
     /// </summary>
     /// <param name='other'>
     /// The collision handler for the other thing we collided with.
@@ -46,13 +46,12 @@ public abstract class AbstractCollisionHandler : MonoBehaviour {
     /// </param>
     public void OnCollision(AbstractCollisionHandler other, Vector3 fromDirection, float distance) {
         // Let the other handler do its thing.  We expect our own HandleSpecialCollision to be called by the other.OnCollision call.
-        other.HandleSpecialCollision(this, fromDirection * -1, distance);
+        other.HandleCollision(this, fromDirection * -1, distance);
     }
 
     /// <summary>
     /// The default collision handler when special overloads have not been defined.  Typically, it would just
-    /// prevent sprites from overlapping by calling HandleNormalCollision on the collider's of the handlers'
-    /// GameObjects.
+    /// prevent sprites from overlapping by calling HandleCollision on the collider's of the handlers' GameObjects.
     /// </summary>
     /// <param name='other'>
     /// The handler connected to the other GameObject that collided with the GameObject this handler is connected to.
@@ -63,5 +62,5 @@ public abstract class AbstractCollisionHandler : MonoBehaviour {
     /// <param name='distance'>
     /// The distance currently separating the two GameObjects.  Remember, a collision is imminent and cannot be avoided.
     /// </param>
-    public abstract void HandleSpecialCollision(AbstractCollisionHandler other, Vector3 fromDirection, float distance);
+    public abstract void HandleCollision(AbstractCollisionHandler other, Vector3 fromDirection, float distance);
 }

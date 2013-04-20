@@ -11,7 +11,7 @@ using System.Collections;
 ///
 /// Sub-classes should modify character state in the 'Act' function.
 /// </summary>
-public abstract class AbstractCharacterController : AbstractCollisionHandler {
+public abstract class AbstractCharacterController : MonoBehaviour {
 
     protected CharacterState _character;
     protected Sprite _sprite;
@@ -20,11 +20,13 @@ public abstract class AbstractCharacterController : AbstractCollisionHandler {
     protected float _colliderBoundsOffsetY;
     protected float _skinThickness;
     protected float _jumpTolerance;
+    protected AbstractCollisionHandler _collisionHandler;
 
     public virtual void Awake() {
         _character = GetComponent<CharacterState>();
         _sprite = GetComponent<Sprite>();
         _transform = this.transform;
+        _collisionHandler = GetComponent<AbstractCollisionHandler>();
     }
 
     public virtual void Start() {
@@ -110,12 +112,11 @@ public abstract class AbstractCharacterController : AbstractCollisionHandler {
                 if (otherHandler != null) {
                     // let the collision handlers do their thing
                     float hitDistance = hitInfo.distance;
-                    otherHandler.OnCollision(this, hDirection * -1, hitDistance);
-                    this.OnCollision(otherHandler, hDirection, hitDistance);
-                }
-                else {
+                    otherHandler.OnCollision(_collisionHandler, hDirection * -1, hitDistance);
+                    _collisionHandler.OnCollision(otherHandler, hDirection, hitDistance);
+                } else {
                     // no special collision handler, we'll handle this ourselves
-                    this.OnCollision(hitInfo.collider, hDirection, hitInfo.distance);
+                    _collisionHandler.OnCollision(hitInfo.collider, hDirection, hitInfo.distance);
                 }
 
             } else {
@@ -144,14 +145,12 @@ public abstract class AbstractCharacterController : AbstractCollisionHandler {
             if (otherHandler != null) {
                 // let the collision handlers do their thing
                 float hitDistance = hitInfo.distance;
-                otherHandler.OnCollision(this, vDirection * -1, hitDistance);
-                this.OnCollision(otherHandler, vDirection, hitDistance);
-            }
-            else {
+                otherHandler.OnCollision(_collisionHandler, vDirection * -1, hitDistance);
+                _collisionHandler.OnCollision(otherHandler, vDirection, hitDistance);
+            } else {
                 // no special collision handler, we'll handle this ourselves
-                this.OnCollision(hitInfo.collider, vDirection, hitInfo.distance);
+                _collisionHandler.OnCollision(hitInfo.collider, vDirection, hitInfo.distance);
             }
-
         } else {
             _character.isGrounded = false;
         }
@@ -168,62 +167,6 @@ public abstract class AbstractCharacterController : AbstractCollisionHandler {
             if (!Physics.Raycast(rayOrigin - xOffset, vDirection, absoluteDistance)) {
                 // We've reached an edge to the left
                 OnLedgeReached(-Vector3.right);
-            }
-        }
-    }
-
-    private AbstractCollisionHandler _lastAbstractHandler;
-    /// <summary>
-    /// Character's treat unhandled special collisions like normal collisions to prevent overlapping sprites.
-    /// </summary>
-    public override void HandleSpecialCollision(AbstractCollisionHandler other, Vector3 fromDirection, float distance) {
-
-        HandleNormalCollision(other.collider, fromDirection, distance);
-
-        if (other != _lastAbstractHandler) {
-            Debug.LogWarning(string.Format("{0} has no special collision behavior for {1}", this.name, other.name), this);
-            _lastAbstractHandler = other;
-        }
-    }
-
-    private Collider _lastCollidedWith;
-    /// <summary>
-    /// When a character runs into a collider without a handler, we'll stop the character's movement in that direction.
-    /// </summary>
-    public override void HandleNormalCollision(Collider collidedWith, Vector3 fromDirection, float distance) {
-
-        if (collidedWith != _lastCollidedWith) {
-            //Debug.Log(string.Format("Entered HandleCollision for {0}. We collided with {1} from direction {2}", this.name, collidedWith.name, fromDirection));
-            _lastCollidedWith = collidedWith;
-        }
-
-        // a collision in the direction we are moving means we should stop moving
-        if (_character.isMovingRight && fromDirection == Vector3.right ||
-            _character.isMovingLeft && fromDirection == -Vector3.right) {
-
-            _character.velocity.x = 0;
-            float hDistance = distance - _colliderBoundsOffsetX;
-
-            if (fromDirection == Vector3.right) {
-                _transform.position = new Vector3(_transform.position.x + hDistance, _transform.position.y, 0);
-            } else {
-                _transform.position = new Vector3(_transform.position.x - hDistance, _transform.position.y, 0);
-            }
-
-        } else if (_character.isMovingUp && fromDirection == Vector3.up ||
-            _character.isMovingDown && fromDirection == -Vector3.up) {
-
-            _character.velocity.y = 0;
-            float vDistance = distance - _colliderBoundsOffsetY;
-
-            if (fromDirection == Vector3.up) {
-                // bumped our head
-                _transform.position = new Vector3(_transform.position.x, _transform.position.y + vDistance, 0);
-            } else {
-                // hit the gound
-                _character.isGrounded = true;
-                _character.isJumping = false;
-                _transform.position = new Vector3(_transform.position.x, _transform.position.y - vDistance, 0);
             }
         }
     }
