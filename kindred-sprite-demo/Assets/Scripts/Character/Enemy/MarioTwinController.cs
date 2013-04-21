@@ -22,7 +22,7 @@ public class MarioTwinController : AbstractCharacterController {
             _character.facing.x *= -1;
         }
 
-        if (jumpAtLedge) {
+        if (jumpAtLedge && direction.x == _character.facing.x) {
             Jump();
         }
     }
