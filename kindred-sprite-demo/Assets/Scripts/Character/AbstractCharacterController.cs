@@ -30,10 +30,6 @@ public abstract class AbstractCharacterController : MonoBehaviour {
     }
 
     public virtual void Start() {
-        /*
-         * should these be the other way around with the character position
-         * driving the transform position?
-         */
         _character.position.x = _transform.position.x;
         _character.position.y = _transform.position.y;
 
@@ -96,7 +92,7 @@ public abstract class AbstractCharacterController : MonoBehaviour {
 
         // if we're not moving horizontally, then don't cast any horizontal rays
         if (hVelocity != 0) {
-            Vector3 hDirection = (hVelocity > 0) ? Vector3.right : -Vector3.right;
+            Vector3 hDirection = (hVelocity > 0) ? Vector3.right : Vector3.left;
 
             float hDistance = hVelocity * deltaTime;
             absoluteDistance = Mathf.Abs(hDistance) + _colliderBoundsOffsetX + _skinThickness;
@@ -129,7 +125,7 @@ public abstract class AbstractCharacterController : MonoBehaviour {
         float vVelocity = _character.velocity.y;
 
         // even if we're not currently moving in the y direction, cast a ray in the direction of gravity (i.e. down)
-        Vector3 vDirection = (vVelocity > 0) ? Vector3.up : -Vector3.up;
+        Vector3 vDirection = (vVelocity > 0) ? Vector3.up : Vector3.down;
 
         float vDistance = vVelocity * deltaTime;
         absoluteDistance = Mathf.Abs(vDistance) + _colliderBoundsOffsetY + _skinThickness;
@@ -166,7 +162,7 @@ public abstract class AbstractCharacterController : MonoBehaviour {
 
             if (!Physics.Raycast(rayOrigin - xOffset, vDirection, absoluteDistance)) {
                 // We've reached an edge to the left
-                OnLedgeReached(-Vector3.right);
+                OnLedgeReached(Vector3.left);
             }
         }
     }
@@ -195,6 +191,5 @@ public abstract class AbstractCharacterController : MonoBehaviour {
     }
 
     protected virtual void OnLedgeReached(Vector3 direction) {
-        //Debug.Log(this.name + " reached ledge " + direction);
     }
 }

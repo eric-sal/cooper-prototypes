@@ -1,7 +1,4 @@
-#if UNITY_EDITOR
-
 using UnityEngine;
-using UnityEditor;
 using System;
 using System.Collections;
 
@@ -18,5 +15,3 @@ public class OnChangeAttribute : PropertyAttribute {
         this.objectReferenceType = objectReferenceType;
     }
 }
-
-#endif
