@@ -17,13 +17,14 @@ public class MarioTwinController : AbstractCharacterController {
     }
 
     protected override void OnLedgeReached(Vector3 direction) {
-
-        if (changeDirectionAtLedge && direction.x == _character.facing.x) {
-            _character.facing.x *= -1;
-        }
-
-        if (jumpAtLedge && direction.x == _character.facing.x) {
-            Jump();
-        }
+		if (direction.x == _character.facing.x) {
+	        if (changeDirectionAtLedge) {
+	            _character.facing.x *= -1;
+	        }
+	
+	        if (jumpAtLedge) {
+	            Jump();
+	        }
+		}
     }
 }

@@ -8,6 +8,14 @@ public class MarioTwinCollisionHandler : CharacterCollisionHandler {
         _controller = GetComponent<MarioTwinController>();
         base.Awake();
     }
+	
+	public override void HandleCollision(Collider collidedWith, Vector3 fromDirection, float distance) {
+		base.HandleCollision(collidedWith, fromDirection, distance);
+		
+		if (fromDirection == Vector3.right) {
+			_controller.Jump();
+		}
+	}
  
     public override void HandleCollision(AbstractCollisionHandler other, Vector3 fromDirection, float distance) {
         // standard behavior to prevent overlapping sprites
@@ -21,14 +29,9 @@ public class MarioTwinCollisionHandler : CharacterCollisionHandler {
     }
  
     public void HandleSpecialCollision(PlayerCollisionHandler player, Vector3 fromDirection, float distance) {
-        Debug.Log(string.Format("Mario Twin collided with {0}.  They look so goddamn like the same person.", player.name));
-
-        if (_controller.changeDirectionOnCollision) {
-            _character.facing.x *= -1;
-        }
-
-        if (_controller.jumpOnCollision) {
+		if (fromDirection == Vector3.down || fromDirection == Vector3.left || fromDirection == Vector3.right) {
+			// If the player hits his twin from the bottom, left, right, then jump
             _controller.Jump();
-        }
+		}
     }
 }
