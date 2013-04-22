@@ -13,6 +13,7 @@ public class MarioTwinCollisionHandler : CharacterCollisionHandler {
 		base.HandleCollision(collidedWith, fromDirection, distance);
 		
 		if (fromDirection == Vector3.right) {
+			// If the twin's forward progress is stopped (i.e.: by a pipe or block), jump over it
 			_controller.Jump();
 		}
 	}

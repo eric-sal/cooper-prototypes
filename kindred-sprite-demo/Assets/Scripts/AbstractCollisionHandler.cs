@@ -45,7 +45,7 @@ public abstract class AbstractCollisionHandler : MonoBehaviour {
     /// The distance currently separating the two characters.  Remember, a collision is imminent and cannot be avoided.
     /// </param>
     public void OnCollision(AbstractCollisionHandler other, Vector3 fromDirection, float distance) {
-        // Let the other handler do its thing.  We expect our own HandleSpecialCollision to be called by the other.OnCollision call.
+        // Let the other handler do its thing.  We expect our own HandleCollision to be called by the other.OnCollision call.
         other.HandleCollision(this, fromDirection * -1, distance);
     }
 

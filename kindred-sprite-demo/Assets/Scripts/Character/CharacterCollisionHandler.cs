@@ -4,20 +4,10 @@ using System.Collections;
 public class CharacterCollisionHandler : AbstractCollisionHandler {
     protected CharacterState _character;
     protected Transform _transform;
-    protected float _colliderBoundsOffsetX;
-    protected float _colliderBoundsOffsetY;
 
     public virtual void Awake() {
         _character = GetComponent<CharacterState>();
         _transform = this.transform;
-    }
-
-    public virtual void Start() {
-        _character.position.x = _transform.position.x;
-        _character.position.y = _transform.position.y;
-
-        _colliderBoundsOffsetX = this.collider.bounds.extents.x;
-        _colliderBoundsOffsetY = this.collider.bounds.extents.y;
     }
 
     /// <summary>
@@ -36,29 +26,27 @@ public class CharacterCollisionHandler : AbstractCollisionHandler {
             _character.isMovingLeft && fromDirection == Vector3.left) {
 
             _character.velocity.x = 0;
-            float hDistance = distance - _colliderBoundsOffsetX;
+            float hDistance = distance - this.collider.bounds.extents.x;
 
-            if (fromDirection == Vector3.right) {
-                _transform.position = new Vector3(_transform.position.x + hDistance, _transform.position.y, 0);
-            } else {
-                _transform.position = new Vector3(_transform.position.x - hDistance, _transform.position.y, 0);
+            if (fromDirection == Vector3.left) {
+				hDistance *= -1;
             }
+			
+			_transform.position = new Vector3(_transform.position.x + hDistance, _transform.position.y, 0);
 
         } else if (_character.isMovingUp && fromDirection == Vector3.up ||
             _character.isMovingDown && fromDirection == Vector3.down) {
 
             _character.velocity.y = 0;
-            float vDistance = distance - _colliderBoundsOffsetY;
+            float vDistance = distance - this.collider.bounds.extents.y;
 
-            if (fromDirection == Vector3.up) {
-                // bumped our head
-                _transform.position = new Vector3(_transform.position.x, _transform.position.y + vDistance, 0);
-            } else {
-                // hit the gound
-                _character.isGrounded = true;
+            if (fromDirection == Vector3.down) {
+				_character.isGrounded = true;
                 _character.isJumping = false;
-                _transform.position = new Vector3(_transform.position.x, _transform.position.y - vDistance, 0);
+				vDistance *= -1;
             }
+			
+			_transform.position = new Vector3(_transform.position.x, _transform.position.y + vDistance, 0);
         }
     }
 }
