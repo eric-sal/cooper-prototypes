@@ -22,7 +22,6 @@ public class MarioTwinCollisionHandler : CharacterCollisionHandler {
         string otherType = other.GetType().ToString();
 
         switch (otherType) {
-
         case "PlayerCollisionHandler":
             base.HandleCollision(other.collider, fromDirection, distance);
             HandleSpecialCollision((PlayerCollisionHandler)other, fromDirection, distance);
@@ -30,7 +29,6 @@ public class MarioTwinCollisionHandler : CharacterCollisionHandler {
 
         case "PickupCollisionHandler":
             _character.coinCount++;
-            Debug.Log(string.Format("{0} has {1} coins.", this.name, _character.coinCount));
             break;
 
         default:

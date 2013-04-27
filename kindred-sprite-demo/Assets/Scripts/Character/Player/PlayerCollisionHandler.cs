@@ -13,8 +13,6 @@ public class PlayerCollisionHandler : CharacterCollisionHandler {
 	public override void HandleCollision(AbstractCollisionHandler other, Vector3 fromDirection, float distance) {
         string otherType = other.GetType().ToString();
 
-
-     
         switch (otherType) {
         case "MarioTwinCollisionHandler":
             base.HandleCollision(other.collider, fromDirection, distance);
@@ -23,7 +21,6 @@ public class PlayerCollisionHandler : CharacterCollisionHandler {
 
         case "PickupCollisionHandler":
             _character.coinCount++;
-            Debug.Log(string.Format("{0} has {1} coins.", this.name, _character.coinCount));
             break;
 
         default:
