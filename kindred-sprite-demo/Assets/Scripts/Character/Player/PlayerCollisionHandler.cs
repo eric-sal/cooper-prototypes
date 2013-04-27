@@ -21,6 +21,7 @@ public class PlayerCollisionHandler : CharacterCollisionHandler {
 
         case "PickupCollisionHandler":
             _character.coinCount++;
+            _character.jumpSpeed += 1f;
             break;
 
         default:

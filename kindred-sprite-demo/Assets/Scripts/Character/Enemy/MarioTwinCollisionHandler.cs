@@ -29,6 +29,7 @@ public class MarioTwinCollisionHandler : CharacterCollisionHandler {
 
         case "PickupCollisionHandler":
             _character.coinCount++;
+            _character.maxWalkSpeed += 0.75f;
             break;
 
         default:

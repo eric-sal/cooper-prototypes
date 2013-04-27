@@ -9,8 +9,8 @@ public class CharacterState : MonoBehaviour {
     public Vector2 position;
     public Vector2 facing;
     public Vector2 velocity;
-    public int maxWalkSpeed;
-    public int jumpSpeed;
+    public float maxWalkSpeed;
+    public float jumpSpeed;
     public int health;
     public bool isGrounded;
     public bool isWalking;
