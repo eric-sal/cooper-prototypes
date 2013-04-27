@@ -15,6 +15,7 @@ public class CharacterState : MonoBehaviour {
     public bool isGrounded;
     public bool isWalking;
     public bool isJumping;
+    public int coinCount;
 
     public bool isMovingRight {
         get { return velocity.x > 0; }

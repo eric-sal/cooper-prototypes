@@ -8,7 +8,7 @@ public class TimerGUI : MonoBehaviour {
 
     public void Awake() {
 		_timeValue = (GUIText)GameObject.Find("GUIText/TimeValue").GetComponent("GUIText");
-		_gameTimer = (GameTimer)GetComponent("GameTimer");
+		_gameTimer = (GameTimer)GameObject.Find("SceneController").GetComponent("GameTimer");
     }
 
     public void Update() {
