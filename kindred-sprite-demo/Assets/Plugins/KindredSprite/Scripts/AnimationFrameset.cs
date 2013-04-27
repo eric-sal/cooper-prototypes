@@ -16,11 +16,11 @@ public class AnimationFrameset {
     public float duration = 0;  // The number of seconds it takes to play all frames in the animation.
     public int startFrame;      // Index of the frame in the SpriteContainer().SpriteData to start our animation on.
     public int endFrame;        // Index of the frame to end our animation on.
-    public bool startOnRandomFrame = false;  // Start the animation on any frame in our set between startFrame and endFrame inclusively.
-    public bool pingPong = false;            // When ping ponging, one complete animation cycle is from the start frame to the end frame, and back down again.
-    [OnChange ("UpdateLooping")] public bool looping = false;           // Keep playing animation until stopped.
-    [OnChange ("UpdateNumberOfPlays")] public int numberOfPlays = -1;   // How many times we should play the animation.
-                                                                        // If looping == false, and numberOfPlays <= 1, then play the animation once.
+    public bool startOnRandomFrame = false;	// Start the animation on any frame in our set between startFrame and endFrame inclusively.
+    public bool pingPong = false;			// When ping ponging, one complete animation cycle is from the start frame to the end frame, and back down again.
+    public bool looping = false;			// Keep playing animation until stopped.
+    public int numberOfPlays = -1;			// How many times we should play the animation.
+											// If looping == false, and numberOfPlays <= 1, then play the animation once.
     
     /* *** Properties *** */
  
@@ -53,35 +53,5 @@ public class AnimationFrameset {
     /// </value>
     public float secondsPerFrame {
         get { return duration / numberOfFrames; }
-    }
- 
-    /* *** Public Methods *** */
-    
-    /// <summary>
-    /// Callback for OnChange event from the Unity editor.
-    /// </summary>
-    /// <param name='newVal'>
-    /// New value for `looping`
-    /// </param>
-    public void UpdateLooping(bool newVal) {
-        looping = newVal;
-        if (looping) {
-            // If we're looping, the number of plays is infinite.
-            numberOfPlays = -1;
-        }
-    }
-    
-    /// <summary>
-    /// Callback for OnChange event from the Unity editor.
-    /// </summary>
-    /// <param name='newVal'>
-    /// New value for `numberOfPlays`
-    /// </param>
-    public void UpdateNumberOfPlays(int newVal) {
-        numberOfPlays = newVal;
-        if (numberOfPlays > 0) {
-            // If we set the number of plays, we're not looping.
-            looping = false;
-        }
     }
 }
