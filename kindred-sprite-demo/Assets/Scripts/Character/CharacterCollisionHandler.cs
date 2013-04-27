@@ -4,10 +4,14 @@ using System.Collections;
 public class CharacterCollisionHandler : AbstractCollisionHandler {
     protected CharacterState _character;
     protected Transform _transform;
+	protected float _colliderBoundsOffsetX;
+    protected float _colliderBoundsOffsetY;
 
     public virtual void Awake() {
         _character = GetComponent<CharacterState>();
         _transform = this.transform;
+		_colliderBoundsOffsetX = this.collider.bounds.extents.x;
+        _colliderBoundsOffsetY = this.collider.bounds.extents.y;
     }
 
     /// <summary>
@@ -24,10 +28,9 @@ public class CharacterCollisionHandler : AbstractCollisionHandler {
         // a collision in the direction we are moving means we should stop moving
         if (_character.isMovingRight && fromDirection == Vector3.right ||
             _character.isMovingLeft && fromDirection == Vector3.left) {
-
-            _character.velocity.x = 0;
-            float hDistance = distance - this.collider.bounds.extents.x;
-
+            float hDistance = distance - _colliderBoundsOffsetX;
+			
+			_character.velocity.x = 0;
             if (fromDirection == Vector3.left) {
 				hDistance *= -1;
             }
@@ -38,7 +41,7 @@ public class CharacterCollisionHandler : AbstractCollisionHandler {
             _character.isMovingDown && fromDirection == Vector3.down) {
 
             _character.velocity.y = 0;
-            float vDistance = distance - this.collider.bounds.extents.y;
+            float vDistance = distance - _colliderBoundsOffsetY;
 
             if (fromDirection == Vector3.down) {
 				_character.isGrounded = true;
