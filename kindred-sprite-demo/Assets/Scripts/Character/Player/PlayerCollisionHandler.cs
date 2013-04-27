@@ -2,7 +2,8 @@ using UnityEngine;
 using System.Collections;
 
 public class PlayerCollisionHandler : CharacterCollisionHandler {
-	private PlayerCharacterController _controller;
+
+    private PlayerCharacterController _controller;
  
     public override void Awake() {
         _controller = GetComponent<PlayerCharacterController>();
@@ -10,12 +11,24 @@ public class PlayerCollisionHandler : CharacterCollisionHandler {
     }
 	
 	public override void HandleCollision(AbstractCollisionHandler other, Vector3 fromDirection, float distance) {
-        // standard behavior to prevent overlapping sprites
-        base.HandleCollision(other.collider, fromDirection, distance);
+        string otherType = other.GetType().ToString();
+
+
      
-        switch (other.GetType().ToString()) {
+        switch (otherType) {
         case "MarioTwinCollisionHandler":
+            base.HandleCollision(other.collider, fromDirection, distance);
             HandleSpecialCollision((MarioTwinCollisionHandler)other, fromDirection, distance);
+            break;
+
+        case "PickupCollisionHandler":
+            _character.coinCount++;
+            Debug.Log(string.Format("{0} has {1} coins.", this.name, _character.coinCount));
+            break;
+
+        default:
+            // standard behavior to prevent overlapping sprites
+            base.HandleCollision(other.collider, fromDirection, distance);
             break;
         }
     }

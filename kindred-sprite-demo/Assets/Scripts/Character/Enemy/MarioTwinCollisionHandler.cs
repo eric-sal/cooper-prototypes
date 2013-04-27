@@ -19,12 +19,23 @@ public class MarioTwinCollisionHandler : CharacterCollisionHandler {
 	}
  
     public override void HandleCollision(AbstractCollisionHandler other, Vector3 fromDirection, float distance) {
-        // standard behavior to prevent overlapping sprites
-        base.HandleCollision(other.collider, fromDirection, distance);
-     
-        switch (other.GetType().ToString()) {
+        string otherType = other.GetType().ToString();
+
+        switch (otherType) {
+
         case "PlayerCollisionHandler":
+            base.HandleCollision(other.collider, fromDirection, distance);
             HandleSpecialCollision((PlayerCollisionHandler)other, fromDirection, distance);
+            break;
+
+        case "PickupCollisionHandler":
+            _character.coinCount++;
+            Debug.Log(string.Format("{0} has {1} coins.", this.name, _character.coinCount));
+            break;
+
+        default:
+            // standard behavior to prevent overlapping sprites
+            base.HandleCollision(other.collider, fromDirection, distance);
             break;
         }
     }
