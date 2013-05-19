@@ -1,3 +1,7 @@
+// Copyright (c) 2012 Eric Salczynski and Ramón Rocha
+// This program (TextGen) is released under the MIT License.
+// http://opensource.org/licenses/MIT
+
 #if UNITY_EDITOR
 
 using UnityEditor;
