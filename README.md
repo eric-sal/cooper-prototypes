@@ -15,3 +15,9 @@ When creating a new project for version control, you need to adjust the version 
 - Include the .meta files in your commit
 
 For more info see: http://docs.unity3d.com/Documentation/Manual/ExternalVersionControlSystemSupport.html
+
+Licensing
+=========
+These tutorials, prototypes, demos, and all other files within this project are released under the [GNU General Public License](http://opensource.org/licenses/GPL-3.0) unless otherwise noted.
+
+Copyright 2012 Eric Salczynski and Ramón Rocha
