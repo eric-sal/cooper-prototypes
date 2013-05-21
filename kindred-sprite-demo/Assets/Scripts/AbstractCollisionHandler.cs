@@ -1,66 +1,137 @@
 using UnityEngine;
-using System.Collections;
+using System;
+using System.Reflection;
 using System.Collections.Generic;
 
 /// <summary>
-/// This class uses the visitor pattern to dispatch calls to the correct overload of HandleSpecialCollision.
-/// The 'OnCollision' method is like an 'Accept' method.
-/// The 'HandleSpecialCollision' method is like a 'Visit' method.
+/// This is the base class from which all other collision handlers inherit.
 /// </summary>
 public abstract class AbstractCollisionHandler : MonoBehaviour {
 
+    // to cache the reflected type name
+    public string typeName;
+    
+    // so we can reuse the same block of memory when dispatching the collision handlers
+    private System.Object[] _args;
+
+    // to confine population of _methodInfoTable to a single thread
+    private static object _theConch = new System.Object();
+
+    // so we can dispatch to the correct overloads based on the run-time types of the collision handlers
+    private static Dictionary<string, Dictionary<string, MethodInfo>> _methodInfoTable;
+
+    public virtual void Awake() {
+        this.typeName = this.GetType().Name;
+        _args = new System.Object[3];
+        BuildMethodInfoTable();
+    }
+
+
     /// <summary>
-    /// Gets called when the GameObject we collided with has no collision handler component associated with it
+    /// Create a table mapping sublcasses of AbstractCollisionHandler to the correct HandleCollision method.
+    /// Inspiration: http://www.arcadianvisions.com/downloads/MultipleDispatch/multiDispatch.html
     /// </summary>
-    public void OnCollision(Collider collidedWith, Vector3 fromDirection, float distance) {
-        this.HandleCollision(collidedWith, fromDirection, distance);
+    private void BuildMethodInfoTable() {
+
+        lock (_theConch) {
+
+            if (_methodInfoTable != null) {
+                // another instance already built the table earlier
+                return;
+            }
+
+            _methodInfoTable = new Dictionary<string, Dictionary<string, MethodInfo>>();
+            Type baseType = System.Type.GetType("AbstractCollisionHandler");
+
+            foreach (Type t in Assembly.GetCallingAssembly().GetTypes()) {
+
+                // skip any Type that does not inherit from baseType
+                if (!t.IsSubclassOf(baseType)) {
+                    continue;
+                }
+
+                // create an entry in our table for this type
+                string thisName = t.Name;
+                _methodInfoTable.Add(thisName, new Dictionary<string, MethodInfo>());
+
+                foreach (MethodInfo mi in t.GetMethods()) {
+                    if (mi.Name == "HandleCollision") {
+                        // add this method to our table
+                        ParameterInfo[] pars = mi.GetParameters();
+                        string otherName = pars[0].ParameterType.Name;
+                        _methodInfoTable[thisName].Add(otherName, mi);
+                    }
+                }
+            }
+        }
     }
 
     /// <summary>
-    /// Handles collision with colliders that don't have collision handlers; like the ground or other
-    /// non-interactive things in the environment.
+    /// Calls the appropriate overload of HandleCollision for this.gameObject and collidedWith.gameObject
+    /// </summary>
+    public void OnCollision(Collider collidedWith, Vector3 fromDirection, float distance) {
+        
+        var other = collidedWith.gameObject.GetComponent<AbstractCollisionHandler>();
+        
+        if (other == null) {
+            this.HandleCollision(collidedWith, fromDirection, distance);
+        
+        } else {
+            string thisName = this.typeName;
+            string otherName = other.typeName;
+
+            // dispatch other handler to our own overload
+            MethodInfo mi = _methodInfoTable[thisName][otherName];
+            _args[0] = other;
+            _args[1] = fromDirection;
+            _args[2] = distance;
+            mi.Invoke(this, _args);
+
+            // dispatch ourselves to the other handler's overload
+            mi = _methodInfoTable[otherName][thisName];
+            _args[0] = this;
+            _args[1] = fromDirection * -1;
+            mi.Invoke(other, _args);
+        }
+    }
+
+    /// <summary>
+    /// Handles collision with objects that we don't have special behavior for; like the ground or other
+    /// non-interactive things in the environment.  A subclass of AbstractCollisionHandler must, at a
+    /// minimum, provide an implementation for this method.  All other overloads of the HandleCollision
+    /// method will funnel into this function unless overridden with different behavior.
     /// </summary>
     public abstract void HandleCollision(Collider collidedWith, Vector3 fromDirection, float distance);
 
-
     /// <summary>
-    /// A controller should call each collision handler's OnCollision method. They in turn will call each other's HandleCollision methods.
+    /// The behavior to use for unknown colliders.  Unless overridden this will pass through to
+    /// HandleCollision(other.collider, fromDirection, distance).
     /// </summary>
-    /// <param name='other'>
-    /// The collision handler for the other thing we collided with.
-    /// </param>
-    /// <param name='fromDirection'>
-    /// Relative to our origin, this is the direction the collision came from.
-    ///
-    /// So, for Mario jumping on a Goomba's head, the direction is down (-Vector3.up).  For the Goomba getting jumped
-    /// on by Mario, the direction is up (Vector3.up).
-    ///
-    /// If Mario is running to the right and runs into a wall.  The direction is right (Vector3.right).  If the wall
-    /// had a handler, the direction would be left (-Vector3.right) for it.
-    ///
-    /// The direction of movement is not always the direction of collision.  If Mario is running to the right, a Goomba
-    /// might fall on his head.  To Mario, the fromDirection is up and to the Goomba it would be down.
-    /// </param>
-    /// <param name='distance'>
-    /// The distance currently separating the two characters.  Remember, a collision is imminent and cannot be avoided.
-    /// </param>
-    public void OnCollision(AbstractCollisionHandler other, Vector3 fromDirection, float distance) {
-        // Let the other handler do its thing.  We expect our own HandleCollision to be called by the other.OnCollision call.
-        other.HandleCollision(this, fromDirection * -1, distance);
+    public virtual void DefaultHandleCollision(AbstractCollisionHandler other, Vector3 fromDirection, float distance) {
+        HandleCollision(other.collider, fromDirection, distance);
     }
 
-    /// <summary>
-    /// The default collision handler when special overloads have not been defined.  Typically, it would just
-    /// prevent sprites from overlapping by calling HandleCollision on the collider's of the handlers' GameObjects.
-    /// </summary>
-    /// <param name='other'>
-    /// The handler connected to the other GameObject that collided with the GameObject this handler is connected to.
-    /// </param>
-    /// <param name='fromDirection'>
-    /// The direction the other GameObject is coming from.
-    /// </param>
-    /// <param name='distance'>
-    /// The distance currently separating the two GameObjects.  Remember, a collision is imminent and cannot be avoided.
-    /// </param>
-    public abstract void HandleCollision(AbstractCollisionHandler other, Vector3 fromDirection, float distance);
+    /*
+    We want a virtual overload of HandleCollision for every concrete subtype of CollisionHandler.
+    In AbstractCollisionHandler, every method should call the DefaultHandleCollision method.  Subclasses
+    can then override HandleCollision for specific cases or can also override DefaultHandleCollision if necessary.
+    Note, we don't need to include overloads for abstract subclasses as there will never be instances of
+    those classes and the dispatching is done based on the run-time type of the collision handlers, not
+    the compile-time type.
+    */
+    public virtual void HandleCollision(CharacterCollisionHandler other, Vector3 fromDirection, float distance) {
+        DefaultHandleCollision(other, fromDirection, distance);
+    }
+
+    public virtual void HandleCollision(PlayerCollisionHandler other, Vector3 fromDirection, float distance) {
+        DefaultHandleCollision(other, fromDirection, distance);
+    }
+
+    public virtual void HandleCollision(MarioTwinCollisionHandler other, Vector3 fromDirection, float distance) {
+        DefaultHandleCollision(other, fromDirection, distance);
+    }
+
+    public virtual void HandleCollision(PickupCollisionHandler other, Vector3 fromDirection, float distance) {
+        DefaultHandleCollision(other, fromDirection, distance);
+    }
 }

@@ -6,10 +6,6 @@ public class PlayerCharacterController : AbstractCharacterController {
     public bool isPlayerInputEnabled;
     private float _horizontalInput;
 
-    public override void Start() {
-        base.Start();
-    }
-
     protected override void Act() {
 
         _character.velocity.x = _character.maxWalkSpeed * _horizontalInput;
