@@ -80,12 +80,11 @@ public abstract class AbstractCharacterController : MonoBehaviour {
     /// <param name='deltaTime'>
     /// The amount of time that has passed since the last collision check.
     /// </param>
-    public virtual void CollisionCheck(float deltaTime) {
+    protected virtual void CollisionCheck(float deltaTime) {
 
         Vector3 rayOrigin = this.collider.bounds.center;
         float absoluteDistance;
         RaycastHit hitInfo;
-        AbstractCollisionHandler otherHandler;
 
         // cast horizontal rays
         float hVelocity = _character.velocity.x;
@@ -104,16 +103,7 @@ public abstract class AbstractCharacterController : MonoBehaviour {
                 Physics.Raycast(rayOrigin - yOffset, hDirection, out hitInfo, absoluteDistance)) {
 
                 // a horizontal collision has occurred
-                otherHandler = hitInfo.collider.gameObject.GetComponent<AbstractCollisionHandler>();
-                if (otherHandler != null) {
-                    // let the collision handlers do their thing
-                    float hitDistance = hitInfo.distance;
-                    otherHandler.OnCollision(_collisionHandler, hDirection * -1, hitDistance);
-                    _collisionHandler.OnCollision(otherHandler, hDirection, hitDistance);
-                } else {
-                    // no special collision handler, we'll handle this ourselves
-                    _collisionHandler.OnCollision(hitInfo.collider, hDirection, hitInfo.distance);
-                }
+                _collisionHandler.OnCollision(hitInfo.collider, hDirection, hitInfo.distance);
 
             } else {
                 // we didn't have a horizontal collision, offset the vertical rays by the amount the player moved
@@ -137,16 +127,8 @@ public abstract class AbstractCharacterController : MonoBehaviour {
             Physics.Raycast(rayOrigin - xOffset, vDirection, out hitInfo, absoluteDistance)) {
 
             // a vertical collision has occurred
-            otherHandler = hitInfo.collider.gameObject.GetComponent<AbstractCollisionHandler>();
-            if (otherHandler != null) {
-                // let the collision handlers do their thing
-                float hitDistance = hitInfo.distance;
-                otherHandler.OnCollision(_collisionHandler, vDirection * -1, hitDistance);
-                _collisionHandler.OnCollision(otherHandler, vDirection, hitDistance);
-            } else {
-                // no special collision handler, we'll handle this ourselves
-                _collisionHandler.OnCollision(hitInfo.collider, vDirection, hitInfo.distance);
-            }
+            _collisionHandler.OnCollision(hitInfo.collider, vDirection, hitInfo.distance);
+
         } else {
             _character.isGrounded = false;
         }
