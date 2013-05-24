@@ -134,8 +134,11 @@ public class TextGen : EditorWindow {
                         // Add our instance to its parent GameObject
                         ((GameObject)dupe).transform.parent = ((GameObject)templateParents[keyReference[key]]).transform;
 
-                        // Set the new instance's position
-                        ((GameObject)dupe).transform.localPosition = new Vector3(x * scale, y * scale, 0);
+                        // Set the new instance's position. The kindred-sprite manager has a center pivot
+                        // point, but the text-gen assumes a lower-left offset, so we need to adjust.
+                        float xOffset = sprite.renderer.bounds.extents.x;
+                        float yOffset = sprite.renderer.bounds.extents.y;
+                        ((GameObject)dupe).transform.localPosition = new Vector3(x * scale + xOffset, y * scale + yOffset, 0);
                     }
                 }
             }
